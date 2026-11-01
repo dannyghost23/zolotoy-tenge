@@ -671,6 +671,7 @@ body.lowfx .shop-btn .cart svg{filter:none}
 .rf-friends .fr{display:flex;justify-content:space-between;padding:8px 12px;border-radius:12px;background:var(--ink-3);font-size:14px}
 .rf-friends .fr span{color:var(--muted);font-size:12.5px}
 .rf-friends .fr.on span{color:#3ddc84}
+.off-sum{font:400 40px var(--f-display)!important;color:var(--gold)!important;text-shadow:0 0 24px #ffc83d66}
 /* ---- chat ---- */
 .chatcard{max-width:460px!important;text-align:left;gap:10px}
 .chatcard h3{text-align:center}
@@ -1028,6 +1029,15 @@ body.lowfx .shop-btn .cart svg{filter:none}
     <div class="btns"><button class="ghost" id="rfClose" type="button">Закрыть</button></div>
   </div>
 </div>
+<div class="modal" id="offModal" hidden>
+  <div class="mcard">
+    <h3>Пока тебя не было</h3>
+    <p id="offAway">—</p>
+    <p class="off-sum" id="offSum">+0 ₸</p>
+    <p class="note" id="offNote" style="font-size:12.5px"></p>
+    <div class="btns"><button class="primary" id="offTake" type="button">Забрать</button></div>
+  </div>
+</div>
 <div class="modal" id="rbModal" hidden>
   <div class="mcard">
     <h3>Переродиться?</h3>
@@ -1289,6 +1299,7 @@ const ACH=[
 const fresh=()=>({coins:0,earned:0,banked:0,playMs:0,clicks:0,crits:0,golden:0,cases:0,maxCombo:false,lv:{},ach:{},skins:{classic:1},skin:'classic',buffs:{},lvl:1,rb:{count:0,crystals:0,perks:{}},adm:{},claimed:{},mkDone:{},boss:{lvl:0,wins:0,next:Date.now()+60000},login:{last:'',streak:0,claimed:''},planet:{terra:0,cities:0,moons:0,rings:0,sats:0,meteors:0,owned:{}}});
 let S=fresh();
 try{const raw=localStorage.getItem('zt-clicker');if(raw)S=Object.assign(fresh(),JSON.parse(raw));}catch(e){}
+const BOOT_TS=Number(S.savedAt)||0;   // когда игра сохранялась в последний раз (для оффлайн-дохода)
 function migrate(){
 S.skins=Object.assign({classic:1},S.skins||{});
 S.rb=Object.assign({count:0,crystals:0,perks:{}},S.rb||{});S.rb.perks=S.rb.perks||{};S.banked=S.banked||0;S.playMs=S.playMs||0;
@@ -1609,7 +1620,7 @@ function centerHit(auto){
   else{const r=btn.getBoundingClientRect();const lx=Math.random()*1.2-.6,ly=Math.random()*1.2-.6;hit({lx,ly},{x:r.left+r.width/2+lx*r.width*.35,y:r.top+r.height/2-ly*r.height*.35},auto);}
 }
 btn.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();centerHit(false);}});
-const anyOpen=()=>!$('token').hidden||!$('sellModal').hidden||!$('admin').hidden||!$('rebirth').hidden||!$('rbModal').hidden||!$('settings').hidden||!$('modal').hidden||!$('roll').hidden||!$('achModal').hidden||!$('lbModal').hidden||!$('shop').hidden||!$('dailyModal').hidden||!$('planet').hidden||!$('chatModal').hidden||!$('chModal').hidden||!$('rfModal').hidden;
+const anyOpen=()=>!$('token').hidden||!$('sellModal').hidden||!$('admin').hidden||!$('rebirth').hidden||!$('rbModal').hidden||!$('settings').hidden||!$('modal').hidden||!$('roll').hidden||!$('achModal').hidden||!$('lbModal').hidden||!$('shop').hidden||!$('dailyModal').hidden||!$('planet').hidden||!$('chatModal').hidden||!$('chModal').hidden||!$('rfModal').hidden||!$('offModal').hidden;
 document.addEventListener('keydown',e=>{if(e.code==='Space'&&!e.repeat&&!anyOpen()){e.preventDefault();centerHit(false);}if(e.key==='Escape'&&!$('shop').hidden&&$('roll').hidden)closeShop();if(e.key==='Escape'&&!$('settings').hidden&&$('modal').hidden&&$('lbModal').hidden)closeSet();if(e.key==='Escape'&&!$('rebirth').hidden&&$('rbModal').hidden)closeRb();if(e.key==='Escape'&&!$('admin').hidden)closeAdm();if(e.key==='Escape'&&!$('token').hidden)closeToken();if((e.key==='m'||e.key==='M'||e.code==='KeyM')&&!/INPUT|TEXTAREA/.test((e.target&&e.target.tagName)||'')){A.init();A.toggleAll();renderSet();toast(A.isMuted()?'Звук выключен':'Звук включён');}});
 
 function shake(){if(!SET.shake)return;document.body.animate([{transform:'translate(0,0)'},{transform:'translate(-6px,3px)'},{transform:'translate(5px,-3px)'},{transform:'translate(0,0)'}],{duration:240});}
@@ -1897,7 +1908,7 @@ function renderBuffs(){
   else for(const ch of box.children){const id=ch.dataset.b,left=S.buffs[id]-now(),d=id==='frenzy'?FRENZY:BUFFS.find(b=>b.id===id);ch.querySelector('span').textContent=Math.ceil(left/1000)+'с';ch.querySelector('i').style.width=Math.min(100,left/(d.dur*1000)*100)+'%';}
 }
 function toast(html){const d=document.createElement('div');d.innerHTML=html;$('toast').appendChild(d);setTimeout(()=>d.remove(),3100);}
-function save(){S.savedAt=Date.now();try{localStorage.setItem('zt-clicker',JSON.stringify(S));}catch(e){}cloudDirty=true;}
+function save(routine){S.savedAt=Date.now();try{localStorage.setItem('zt-clicker',JSON.stringify(S));}catch(e){}if(typeof onSaved==='function')onSaved(routine);}
 addEventListener('visibilitychange',save);
 
 let last=performance.now(),saveAt=0,turboAcc=0;
@@ -1910,7 +1921,7 @@ setInterval(()=>{
   bossTick(dt);dailyTick();if(planetOn)renderPlanetUI(true);
   renderBuffs();renderStats();if(!rbEl.hidden)renderRbLive();
   if(!$('shop').hidden)for(const b of document.querySelectorAll('.open[data-case]')){const c=CASES.find(x=>x.id===b.dataset.case);b.classList.toggle('no',S.coins<c.price);}
-  if(t-saveAt>3000){saveAt=t;save();checkAch();checkLevel();}
+  if(t-saveAt>3000){saveAt=t;save(1);checkAch();checkLevel();}
 },100);
 
 document.querySelectorAll('#seg button').forEach(b=>b.onclick=()=>{ptab=b.dataset.tab;document.querySelectorAll('#seg button').forEach(x=>x.classList.toggle('on',x===b));renderPanel();});
@@ -1920,6 +1931,24 @@ $('resetBtn').onclick=()=>{$('modal').hidden=false;};
 $('cancelReset').onclick=()=>{$('modal').hidden=true;};
 $('confirmReset').onclick=()=>{const nk=S.nick,cl=S.claimed,ns=S.newsSeen,md=S.mkDone,lg=S.login,dl=S.daily;S=fresh();S.nick=nk;S.claimed=cl||{};S.newsSeen=ns;S.mkDone=md||{};S.login=lg||S.login;S.daily=dl;lastPushed=-1;combo=0;disp=0;save();$('modal').hidden=true;showSkin();renderPanel();renderAch();renderStats();toast('Игра начата заново');};
 
+
+
+/* ================= OFFLINE EARNINGS ================= */
+const OFF_RATE=.25, OFF_MAX_H=3;   // пока игрок не в игре: 25% от дохода в секунду, максимум 3 часа
+let offlineDone=false;
+function fmtDur(sec){sec=Math.floor(sec);const h=Math.floor(sec/3600),m=Math.floor(sec%3600/60);return h?h+' ч '+m+' мин':m?m+' мин':sec+' с';}
+function offlineCheck(fromTs){
+  if(offlineDone)return;offlineDone=true;
+  if(!fromTs)return;const away=(Date.now()-fromTs)/1000;if(away<60)return;
+  const sec=Math.min(away,OFF_MAX_H*3600),ps=perSec();const v=Math.floor(ps*sec*OFF_RATE);if(v<1)return;
+  S.coins+=v;S.earned+=v;disp=S.coins-v;save();renderStats();
+  $('offAway').textContent=fmtDur(away)+(away>OFF_MAX_H*3600?' (засчитано '+OFF_MAX_H+' ч)':'');
+  $('offSum').textContent='+'+fmt(v)+' ₸';
+  $('offNote').textContent='Пока тебя нет, монеты идут со скоростью '+Math.round(OFF_RATE*100)+'% от обычной, максимум '+OFF_MAX_H+' часа. Заходи чаще!';
+  $('offModal').hidden=false;
+}
+$('offTake').onclick=()=>{$('offModal').hidden=true;A.reveal(2);const r=$('balBox').getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,50,true,true);};
+if(typeof cloudLoad!=='function')setTimeout(()=>offlineCheck(BOOT_TS),1200);
 
 /* ================= PERFORMANCE ================= */
 var COVER=false;
@@ -2033,38 +2062,51 @@ function tgBackSync(){
 }
 if(tg&&tgv('6.1'))tg.BackButton.onClick(()=>{for(const [id,close] of SCREENS){if($(id)&&!$(id).hidden){close();break;}}});
 
-/* --- cloud saves: Telegram CloudStorage, 4096 chars per value → split into chunks --- */
-const CHUNK=3800;cloudDirty=false;let cloudBusy=false,lastCloud=0;
+/* --- cloud saves: Telegram CloudStorage, 4096 chars per value → chunks in two alternating slots ---
+   Слоты a/b: новый сейв пишется в свободный слот, а «meta» переключается только в самом конце,
+   поэтому оборванная запись (закрыли игру посреди сохранения) никогда не портит прошлый сейв. */
+const CHUNK=3800;cloudDirty=false;let cloudUrgent=false,cloudBusy=false,lastCloud=0,cloudReady=false,cloudSlot='a';
 const cs=tg&&tgv('6.9')?tg.CloudStorage:null;
 const csGet=keys=>new Promise(res=>{try{cs.getItems(keys,(err,vals)=>res(err?null:vals));}catch(e){res(null);}});
 const csSet=(k,v)=>new Promise(res=>{try{cs.setItem(k,v,(err,ok)=>res(!err&&ok));}catch(e){res(false);}});
+function onSaved(routine){cloudDirty=true;if(!routine)cloudUrgent=true;}
 async function cloudSave(force){
-  if(!cs||cloudBusy)return;if(!cloudDirty&&!force)return;if(!force&&Date.now()-lastCloud<10000)return;
-  cloudBusy=true;cloudDirty=false;lastCloud=Date.now();
+  if(!cs||!cloudReady||cloudBusy)return;if(!cloudDirty&&!force)return;
+  const gap=Date.now()-lastCloud;if(!force&&gap<(cloudUrgent?1500:15000))return;
+  cloudBusy=true;cloudDirty=false;cloudUrgent=false;lastCloud=Date.now();
   try{
     const json=JSON.stringify(S),n=Math.ceil(json.length/CHUNK);
-    if(n>60){cloudBusy=false;return;}
-    for(let i=0;i<n;i++){if(!(await csSet('s'+i,json.slice(i*CHUNK,(i+1)*CHUNK)))){cloudDirty=true;cloudBusy=false;return;}}
-    await csSet('meta',JSON.stringify({n,at:S.savedAt||Date.now()}));
+    if(n>30){cloudBusy=false;return;}
+    const slot=cloudSlot==='a'?'b':'a';
+    for(let i=0;i<n;i++){if(!(await csSet(slot+i,json.slice(i*CHUNK,(i+1)*CHUNK)))){cloudDirty=true;cloudBusy=false;return;}}
+    if(await csSet('meta',JSON.stringify({n,at:S.savedAt||Date.now(),slot})))cloudSlot=slot;else cloudDirty=true;
   }catch(e){cloudDirty=true;}
   cloudBusy=false;
 }
+// возвращает время облачного сейва, если он загружен, иначе null
 async function cloudLoad(){
-  if(!cs)return;
-  const m=await csGet(['meta']);if(!m||!m.meta)return;
-  let meta;try{meta=JSON.parse(m.meta);}catch(e){return;}
-  if(!meta||!(meta.n>0)||meta.n>60||(Number(meta.at)||0)<=(S.savedAt||0))return;
-  const keys=[...Array(meta.n)].map((_,i)=>'s'+i);const vals=await csGet(keys);if(!vals)return;
-  let json='';for(const k of keys){if(typeof vals[k]!=='string')return;json+=vals[k];}
+  if(!cs){cloudReady=true;return null;}
   try{
-    const d=JSON.parse(json);if(!d||typeof d!=='object')return;
+    const m=await csGet(['meta']);let meta=null;try{meta=m&&m.meta?JSON.parse(m.meta):null;}catch(e){}
+    if(!meta||!(meta.n>0)||meta.n>60)return null;
+    const slot=meta.slot==='a'||meta.slot==='b'?meta.slot:'s';if(slot!=='s')cloudSlot=slot;
+    // сравниваем с моментом последнего локального сейва ДО запуска, а не с текущим (автосейв уже успел обновить время)
+    if((Number(meta.at)||0)<=BOOT_TS)return null;
+    const keys=[...Array(meta.n)].map((_,i)=>slot+i);const vals=await csGet(keys);if(!vals)return null;
+    let json='';for(const k of keys){if(typeof vals[k]!=='string')return null;json+=vals[k];}
+    const d=JSON.parse(json);if(!d||typeof d!=='object')return null;
     S=Object.assign(fresh(),d);migrate();disp=S.coins;S.lvl=level();
     showSkin();renderPanel();renderAch();renderStats();
     try{localStorage.setItem('zt-clicker',JSON.stringify(S));}catch(e){}
     toast('Прогресс загружен из Telegram');
-  }catch(e){}
+    return Number(meta.at)||null;
+  }catch(e){return null;}
+  finally{cloudReady=true;cloudDirty=true;cloudUrgent=true;}
 }
-document.addEventListener('visibilitychange',()=>{if(document.hidden){save();cloudSave(true);}});
+function flushSave(){save();cloudSave(true);}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)flushSave();});
+addEventListener('pagehide',flushSave);
+if(tg){try{tg.onEvent('deactivated',flushSave);}catch(e){}}
 
 /* --- token links: open through Telegram --- */
 document.addEventListener('click',e=>{
@@ -2282,7 +2324,7 @@ SCREENS.unshift(['rfModal',()=>{$('rfModal').hidden=true;}]);
 renderRef();refJoin();setTimeout(refClaim,6000);setInterval(()=>{if(!document.hidden)refClaim();},90000);
 
 renderLB();
-cloudLoad().then(()=>pushScore(true));
+cloudLoad().then(at=>{offlineCheck(at||BOOT_TS);pushScore(true);});
 setInterval(()=>{tgBackSync();cloudSave(false);},700);
 setInterval(()=>pushScore(false),20000);
 
