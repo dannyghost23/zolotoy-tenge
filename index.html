@@ -642,6 +642,35 @@ body.lowfx .shop-btn .cart svg{filter:none}
 .smin{display:block;font:700 11px var(--f-num);color:#ffd56b;background:#ffc83d14;border:1px solid #ffc83d40;border-radius:999px;padding:2px 8px;margin:2px auto 0;width:max-content;max-width:100%}
 .sp .smin{font-size:9px;padding:1px 5px;margin-top:1px}
 .lot .smin{margin-top:-2px}
+/* ---- referrals ---- */
+.rf-banner{border-color:#3ddc8488;background:linear-gradient(180deg,#17603f,#0e3a27)!important}
+.rf-banner .cn{background:radial-gradient(circle at 35% 30%,#d6ffe6,#3ddc84 55%,#167a47)!important;box-shadow:0 0 0 2px #0f5532!important;font:15px var(--f-body)!important}
+.rf-banner b{color:#8ff0b8!important}
+.rfcard{max-width:460px!important;max-height:calc(100vh - 32px);overflow-y:auto;text-align:left}
+.rfcard h3{text-align:center}
+.rfcard>*{min-width:0}.rf-link input{width:0}
+.rf-perks{display:grid;gap:8px}
+.rf-perks div{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:14px;background:var(--ink-3);border:1px solid var(--line)}
+.rf-perks b{flex:none;min-width:70px;font:400 20px var(--f-display);color:#3ddc84;text-align:center}
+.rf-perks span{font-size:13.5px;color:var(--muted)}
+.rf-link{display:flex;gap:8px}
+.rf-link input{flex:1;min-width:0;background:#120d20;border:1px solid var(--line);border-radius:12px;color:#fff;padding:10px 12px;font:13px var(--f-num)}
+#rfShare{width:100%}
+.rf-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+.rf-stats div{padding:10px 4px;border-radius:14px;background:var(--ink-3)}
+.rf-stats b{display:block;font:400 22px var(--f-display);color:var(--gold)}
+.rf-stats span{font-size:12px;color:var(--muted)}
+.rf-tiers{display:grid;gap:8px}
+.rf-tier{display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:14px;background:var(--ink-3);border:1px solid var(--line)}
+.rf-tier img{width:44px;height:44px;border-radius:50%}
+.rf-tier .tx{flex:1;font-size:13.5px}.rf-tier .tx b{display:block;font-size:14.5px}
+.rf-tier .bar{height:6px;border-radius:9px;background:#0007;margin-top:5px;overflow:hidden}.rf-tier .bar i{display:block;height:100%;background:#3ddc84}
+.rf-tier.done{border-color:#3ddc84}
+.rf-tier button{padding:7px 12px;border-radius:10px}
+.rf-friends{display:grid;gap:6px;max-height:180px;overflow:auto}
+.rf-friends .fr{display:flex;justify-content:space-between;padding:8px 12px;border-radius:12px;background:var(--ink-3);font-size:14px}
+.rf-friends .fr span{color:var(--muted);font-size:12.5px}
+.rf-friends .fr.on span{color:#3ddc84}
 /* ---- chat ---- */
 .chatcard{max-width:460px!important;text-align:left;gap:10px}
 .chatcard h3{text-align:center}
@@ -723,6 +752,7 @@ body.lowfx .shop-btn .cart svg{filter:none}
       <button id="coinBtn" type="button" aria-label="Нажать на монету"></button>
       <div class="combo-lbl" id="comboTxt">КОМБО ×1,0</div>
     </div>
+    <button class="tk-banner rf-banner" id="rfBanner" type="button" hidden><span class="cn">👥</span><span id="rfBannerTxt">Пригласи друзей: +10% с их монет</span><b>→</b></button>
     <button class="tk-banner ch-banner" id="chBanner" type="button" hidden><span class="cn">✈</span><span id="chBannerTxt">Подпишись на канал — бонус</span><b>→</b></button>
     <button class="tk-banner" id="tkBanner" type="button"><span class="cn">₸</span><span id="tkBannerTxt">Скоро: мемкоин $TENGE</span><b>→</b></button>
     <div class="under">Скин <b id="skinName">Классика</b> · <span id="skinBonus">+0%</span> к клику · <span id="clicks">0</span> кликов</div>
@@ -976,6 +1006,26 @@ body.lowfx .shop-btn .cart svg{filter:none}
     <div class="btns" style="flex-wrap:wrap"><button class="primary" id="chOpen" type="button">Открыть канал</button><button class="ghost" id="chCheck" type="button">Я подписался</button></div>
     <p class="err" id="chErr"></p>
     <div class="btns"><button class="ghost" id="chClose" type="button">Закрыть</button></div>
+  </div>
+</div>
+<div class="modal" id="rfModal" hidden>
+  <div class="mcard wide rfcard">
+    <h3>Пригласи друзей</h3>
+    <div class="rf-perks">
+      <div><b id="rfP1">+10%</b><span>от всех монет, которые заработает друг</span></div>
+      <div><b id="rfP2">+100К</b><span>тебе за каждого активного друга</span></div>
+      <div><b id="rfP3">+50К</b><span>другу за вход по твоей ссылке</span></div>
+    </div>
+    <div class="rf-link"><input id="rfLink" readonly aria-label="Твоя ссылка"><button class="ghost" id="rfCopy" type="button">Копировать</button></div>
+    <button class="primary" id="rfShare" type="button">Отправить друзьям</button>
+    <p class="err" id="rfErr"></p>
+    <div class="rf-stats"><div><b id="rfTotal">0</b><span>друзей</span></div><div><b id="rfActive">0</b><span>активных</span></div><div><b id="rfEarned">0</b><span>₸ с друзей</span></div></div>
+    <div class="alabel">Награды за активных друзей</div>
+    <div class="rf-tiers" id="rfTiers"></div>
+    <div class="alabel">Твои друзья</div>
+    <div class="rf-friends" id="rfFriends"></div>
+    <p class="note" style="font-size:12px">Друг становится активным, когда заработает 50К монет. Засчитываются только новые игроки.</p>
+    <div class="btns"><button class="ghost" id="rfClose" type="button">Закрыть</button></div>
   </div>
 </div>
 <div class="modal" id="rbModal" hidden>
@@ -1244,7 +1294,7 @@ S.skins=Object.assign({classic:1},S.skins||{});
 S.rb=Object.assign({count:0,crystals:0,perks:{}},S.rb||{});S.rb.perks=S.rb.perks||{};S.banked=S.banked||0;S.playMs=S.playMs||0;
 S.adm=S.adm||{};S.claimed=S.claimed||{};S.mkDone=S.mkDone||{};if(!SK[S.skin])S.skin='classic';
 S.boss=Object.assign({lvl:0,wins:0,next:Date.now()+60000},S.boss||{});S.login=Object.assign({last:'',streak:0,claimed:''},S.login||{});
-S.planet=Object.assign({terra:0,cities:0,moons:0,rings:0,sats:0,meteors:0},S.planet||{});S.planet.owned=S.planet.owned||{};
+S.planet=Object.assign({terra:0,cities:0,moons:0,rings:0,sats:0,meteors:0},S.planet||{});S.planet.owned=S.planet.owned||{};S.refTiers=S.refTiers||{};S.refEarned=S.refEarned||0;
 }
 migrate();
 var cloudDirty=false;
@@ -1559,7 +1609,7 @@ function centerHit(auto){
   else{const r=btn.getBoundingClientRect();const lx=Math.random()*1.2-.6,ly=Math.random()*1.2-.6;hit({lx,ly},{x:r.left+r.width/2+lx*r.width*.35,y:r.top+r.height/2-ly*r.height*.35},auto);}
 }
 btn.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();centerHit(false);}});
-const anyOpen=()=>!$('token').hidden||!$('sellModal').hidden||!$('admin').hidden||!$('rebirth').hidden||!$('rbModal').hidden||!$('settings').hidden||!$('modal').hidden||!$('roll').hidden||!$('achModal').hidden||!$('lbModal').hidden||!$('shop').hidden||!$('dailyModal').hidden||!$('planet').hidden||!$('chatModal').hidden||!$('chModal').hidden;
+const anyOpen=()=>!$('token').hidden||!$('sellModal').hidden||!$('admin').hidden||!$('rebirth').hidden||!$('rbModal').hidden||!$('settings').hidden||!$('modal').hidden||!$('roll').hidden||!$('achModal').hidden||!$('lbModal').hidden||!$('shop').hidden||!$('dailyModal').hidden||!$('planet').hidden||!$('chatModal').hidden||!$('chModal').hidden||!$('rfModal').hidden;
 document.addEventListener('keydown',e=>{if(e.code==='Space'&&!e.repeat&&!anyOpen()){e.preventDefault();centerHit(false);}if(e.key==='Escape'&&!$('shop').hidden&&$('roll').hidden)closeShop();if(e.key==='Escape'&&!$('settings').hidden&&$('modal').hidden&&$('lbModal').hidden)closeSet();if(e.key==='Escape'&&!$('rebirth').hidden&&$('rbModal').hidden)closeRb();if(e.key==='Escape'&&!$('admin').hidden)closeAdm();if(e.key==='Escape'&&!$('token').hidden)closeToken();if((e.key==='m'||e.key==='M'||e.code==='KeyM')&&!/INPUT|TEXTAREA/.test((e.target&&e.target.tagName)||'')){A.init();A.toggleAll();renderSet();toast(A.isMuted()?'Звук выключен':'Звук включён');}});
 
 function shake(){if(!SET.shake)return;document.body.animate([{transform:'translate(0,0)'},{transform:'translate(-6px,3px)'},{transform:'translate(5px,-3px)'},{transform:'translate(0,0)'}],{duration:240});}
@@ -2170,6 +2220,66 @@ setTimeout(function invite(){
   try{localStorage.setItem('zt-ch-ask',String(Date.now()));}catch(e){}
   $('chErr').textContent='';chSync();$('chModal').hidden=false;
 },90000);
+
+/* --- referrals: invite link, bonus for the friend, 10% of friends' coins for the inviter --- */
+// ВПИШИ ССЫЛКУ НА ИГРУ из @BotFather (вида https://t.me/имя_бота/game)
+const GAME_LINK='https://t.me/TengeGoldenclikerbot/TENGE';
+const REF_URL='https://ktkcathaqbvrmpetbrgv.supabase.co/functions/v1/referral';
+const REF_TIERS=[{n:3,skin:'neon'},{n:10,skin:'aurora'},{n:50,skin:'phoenix'}];
+let RF={total:0,active:0,friends:[],busy:false,state:'off',rules:{joinBonus:5e4,activeAt:5e4,activeBonus:1e5,pct:.1}};
+S.refEarned=S.refEarned||0;S.refTiers=S.refTiers||{};
+const myRefLink=()=>GAME_LINK&&tgUser?GAME_LINK.replace(/\/+$/,'')+'?startapp=ref_'+tgUser.id:'';
+async function refCall(action){
+  if(!tg||!tg.initData)return null;
+  try{const r=await fetch(REF_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({initData:tg.initData,action})});return await r.json();}catch(e){return null;}
+}
+async function refClaim(){
+  if(RF.busy)return;RF.busy=true;const d=await refCall('claim');RF.busy=false;
+  if(!d||d.status!=='ok'){RF.state=d?d.status:'off';renderRef();return;}
+  RF.state='live';RF.total=d.total|0;RF.active=d.active|0;RF.friends=Array.isArray(d.friends)?d.friends:[];if(d.rules)RF.rules=d.rules;
+  const c=Math.max(0,Math.floor(Number(d.coins)||0));
+  if(c>0){S.coins+=c;S.refEarned+=c;save();renderStats();toast((d.newActive?'Новый активный друг! ':'Доход с друзей: ')+'<b>+'+fmt(c)+' ₸</b>');}
+  renderRef();
+}
+async function refJoin(){
+  if(!tg||!tg.initData||S.refJoined)return;
+  const sp=tg.initDataUnsafe&&tg.initDataUnsafe.start_param||'';if(!/^ref_\d+$/.test(sp))return;
+  await new Promise(r=>setTimeout(r,4000));// даём рейтингу создать запись игрока
+  const d=await refCall('join');if(!d)return;
+  if(d.status==='joined'){const b=Number(d.bonus)||0;S.refJoined=1;S.coins+=b;save();renderStats();toast('Ты пришёл по приглашению друга: <b>+'+fmt(b)+' ₸</b>');A.reveal(3);burst(innerWidth/2,innerHeight/2,60,true,true);}
+  else if(['already','not_new','self','loop','bad_ref'].includes(d.status)){S.refJoined=1;save();}
+}
+function renderRef(){
+  const R=RF.rules||{};
+  $('rfBanner').hidden=false;
+  $('rfBannerTxt').textContent=RF.total?'Друзей: '+RF.total+' · с них +'+fmt(S.refEarned)+' ₸':'Пригласи друзей: +'+Math.round((R.pct||.1)*100)+'% с их монет';
+  if($('rfModal').hidden)return;
+  $('rfP1').textContent='+'+Math.round((R.pct||.1)*100)+'%';$('rfP2').textContent='+'+fmt(R.activeBonus||1e5);$('rfP3').textContent='+'+fmt(R.joinBonus||5e4);
+  const link=myRefLink();$('rfLink').value=link||'Ссылка появится, когда автор игры её настроит';
+  $('rfCopy').disabled=$('rfShare').disabled=!link;
+  $('rfErr').textContent=!tg||!tg.initData?'Приглашать можно только из игры в Telegram.':RF.state==='no_bot_token'?'Сервер ещё не настроен.':RF.state==='bad_signature'?'Перезапусти игру из бота.':'';
+  $('rfTotal').textContent=RF.total;$('rfActive').textContent=RF.active;$('rfEarned').textContent=fmt(S.refEarned);
+  const tb=$('rfTiers');tb.innerHTML='';
+  for(const t of REF_TIERS){
+    const sk=SK[t.skin];if(!sk)continue;const got=!!S.refTiers[t.n],can=RF.active>=t.n&&!got;
+    const el=document.createElement('div');el.className='rf-tier'+(got?' done':'');
+    el.innerHTML=`<img src="${preview(t.skin)}" alt=""><div class="tx"><b></b><span></span><div class="bar"><i style="width:${Math.min(100,RF.active/t.n*100)}%"></i></div></div>`;
+    el.querySelector('b').textContent=t.n+' активных друзей';el.querySelector('span').textContent='Скин «'+sk.n+'» · '+RAR[sk.r].n;
+    if(got){const s=document.createElement('span');s.textContent='✓';s.style.cssText='color:#3ddc84;font-weight:800';el.appendChild(s);}
+    else if(can){const b=document.createElement('button');b.type='button';b.className='primary';b.textContent='Забрать';b.onclick=()=>{if(S.refTiers[t.n]||RF.active<t.n)return;S.refTiers[t.n]=1;if(S.skins[t.skin]){const v=Math.floor(Math.max(1e6,(typeof minPrice==='function'?minPrice(t.skin):0)*.1));S.coins+=v;toast('Скин уже есть — держи <b>+'+fmt(v)+' ₸</b>');}else{S.skins[t.skin]=1;toast('Новый скин: <b>'+sk.n+'</b>');}A.reveal(sk.r);burst(innerWidth/2,innerHeight/2,70,true,true,RAR[sk.r].c);save();renderStats();checkAch();renderRef();};el.appendChild(b);}
+    tb.appendChild(el);
+  }
+  const fl=$('rfFriends');fl.innerHTML='';
+  if(!RF.friends.length){const e=document.createElement('div');e.className='lb-empty';e.textContent=RF.state==='live'?'Пока никого. Отправь ссылку друзьям!':'Загружаем…';fl.appendChild(e);}
+  for(const f of RF.friends){const d=document.createElement('div');d.className='fr'+(f.active?' on':'');const n=document.createElement('b');n.textContent=cleanNick(f.nick)||'Игрок';const st=document.createElement('span');st.textContent='ур. '+(Number(f.level)||1)+' · '+(f.active?'активен':'ещё не активен');d.append(n,st);fl.appendChild(d);}
+}
+$('rfBanner').onclick=()=>{$('rfModal').hidden=false;renderRef();refClaim();};
+$('rfClose').onclick=()=>{$('rfModal').hidden=true;};
+$('rfCopy').onclick=async()=>{const l=myRefLink();if(!l)return;try{await navigator.clipboard.writeText(l);toast('Ссылка скопирована');}catch(e){$('rfLink').select();document.execCommand&&document.execCommand('copy');toast('Ссылка скопирована');}};
+$('rfShare').onclick=()=>{const l=myRefLink();if(!l)return;const txt='Залетай в «Золотой Тенге» 🪙 Кликай монету, выбивай скины. По моей ссылке +'+fmt(RF.rules.joinBonus||5e4)+' ₸ на старт!';
+  const u='https://t.me/share/url?url='+encodeURIComponent(l)+'&text='+encodeURIComponent(txt);try{tg.openTelegramLink(u);}catch(e){window.open(u,'_blank');}};
+SCREENS.unshift(['rfModal',()=>{$('rfModal').hidden=true;}]);
+renderRef();refJoin();setTimeout(refClaim,6000);setInterval(()=>{if(!document.hidden)refClaim();},90000);
 
 renderLB();
 cloudLoad().then(()=>pushScore(true));
