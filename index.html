@@ -1894,11 +1894,13 @@ document.addEventListener('click',e=>{
   try{if(/^https:\/\/t\.me\//.test(u))tg.openTelegramLink(u);else tg.openLink(u);}catch(err){window.open(u,'_blank');}
 });
 
-/* --- leaderboard: local until a server is connected --- */
+/* --- leaderboard: Supabase edge function, player verified by Telegram signature --- */
+const LB_URL='https://ktkcathaqbvrmpetbrgv.supabase.co/functions/v1/leaderboard';
+let lbStatus='',lbMyRank=0,lbBusy=false,lbLastSent=0;
 function lbRowEl(r,rank){
-  const li=document.createElement('li');li.className='me';
+  const li=document.createElement('li');if(r.me)li.className='me';
   const sk=SK[r.skin]?r.skin:'classic';
-  const rk=document.createElement('span');rk.className='rk';rk.textContent=rank||'—';
+  const rk=document.createElement('span');rk.className='rk';rk.textContent=rank?(rank<=3?['🥇','🥈','🥉'][rank-1]:rank):'—';
   const img=document.createElement('img');img.src=preview(sk);img.alt='';
   const who=document.createElement('div');who.className='who';
   const nk=document.createElement('div');nk.className='nk';nk.textContent=cleanNick(r.nick)||'Игрок';
@@ -1908,25 +1910,48 @@ function lbRowEl(r,rank){
   li.append(rk,img,who,sc);return li;
 }
 function renderLB(){
-  const me={nick:S.nick||'Ты',earned:total(),level:level(),skin:S.skin,rb:S.rb.count};
-  for(const el of [$('lbMini'),$('lbFull')]){el.innerHTML='';el.appendChild(lbRowEl(me,0));}
-  const n=document.createElement('div');n.className='lb-empty';n.textContent='Общий рейтинг появится, когда к игре подключат сервер.';$('lbMini').appendChild(n);
-  $('lbNote').textContent='Пока рейтинг показывает только твой результат. Ник можно поменять.';
-  $('liveTag').hidden=true;$('myRank').hidden=true;
+  const rows=lbRows.slice();
+  const fill=(el,n)=>{el.innerHTML='';
+    if(!rows.length){const d=document.createElement('div');d.className='lb-empty';d.textContent=lbState==='live'?'Пока в рейтинге никого нет. Играй — и ты будешь первым.':'Загружаем рейтинг…';el.appendChild(d);return;}
+    rows.slice(0,n).forEach((r,i)=>el.appendChild(lbRowEl(r,i+1)));
+    const meIdx=rows.findIndex(r=>r.me);
+    if(meIdx<0&&lbMyRank>n){const sep=document.createElement('div');sep.className='lb-empty';sep.style.padding='2px';sep.textContent='···';el.appendChild(sep);el.appendChild(lbRowEl({me:true,nick:S.nick||'Ты',earned:total(),level:level(),rb:S.rb.count,skin:S.skin},lbMyRank));}
+  };
+  fill($('lbMini'),5);fill($('lbFull'),50);
+  const rb=$('myRank');if(lbMyRank>0){rb.hidden=false;rb.textContent='#'+lbMyRank;}else rb.hidden=true;
+  $('liveTag').hidden=lbState!=='live';
+  let note='Рейтинг всех игроков по монетам, заработанным за всё время. Результат отправляется сам.';
+  if(!tg||!tg.initData)note='Рейтинг можно смотреть, а попасть в него можно только из игры в Telegram.';
+  else if(lbStatus==='no_bot_token')note='Сервер рейтинга ещё не настроен: автор игры должен добавить токен бота.';
+  else if(lbStatus==='bad_signature')note='Не удалось подтвердить твой аккаунт Telegram. Перезапусти игру из бота.';
+  else if(lbStatus==='banned')note='Твой результат скрыт из рейтинга.';
+  else if(lbState==='off')note='Нет связи с сервером рейтинга. Попробуем ещё раз через минуту.';
+  $('lbNote').textContent=note;
 }
-async function pushScore(){}
+async function pushScore(force){
+  if(lbBusy)return;if(!force&&Date.now()-lbLastSent<20000)return;
+  lbBusy=true;lbLastSent=Date.now();
+  const body=tg&&tg.initData?{initData:tg.initData,nick:S.nick||'',earned:Math.floor(total()),level:level(),rb:S.rb.count,skin:S.skin}:{};
+  try{
+    const r=await fetch(LB_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});
+    const d=await r.json();
+    lbRows=Array.isArray(d.top)?d.top:[];lbMyRank=Number(d.myRank)||0;lbStatus=String(d.status||'');lbState='live';lastPushed=Math.floor(total());
+  }catch(e){lbState='off';}
+  lbBusy=false;renderLB();
+}
 $('nickForm').addEventListener('submit',e=>{
   e.preventDefault();const n=cleanNick($('nickInput').value);
   if(n.length<2){$('nickErr').textContent='Ник должен быть от 2 до 16 символов.';return;}
-  $('nickErr').textContent='';S.nick=n;save();toast('Ник сохранён');renderLB();
+  $('nickErr').textContent='';S.nick=n;save();toast('Ник сохранён');pushScore(true);
 });
-function openLB(){$('nickInput').value=S.nick||'';$('nickErr').textContent='';renderLB();$('lbModal').hidden=false;}
+function openLB(){$('nickInput').value=S.nick||'';$('nickErr').textContent='';renderLB();$('lbModal').hidden=false;pushScore(false);}
 $('lbBtn').onclick=openLB;$('lbOpen').onclick=openLB;
 $('lbClose').onclick=()=>{$('lbModal').hidden=true;};
 
 renderLB();
-cloudLoad();
+cloudLoad().then(()=>pushScore(true));
 setInterval(()=>{tgBackSync();cloudSave(false);},700);
+setInterval(()=>pushScore(false),20000);
 
 /* ================= REBIRTH ================= */
 const PERKS=[
