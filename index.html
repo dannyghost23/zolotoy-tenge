@@ -638,6 +638,10 @@ body.lowfx .shop-btn .cart svg{filter:none}
 .ch-banner b{color:#8fd0ff!important}
 .ch-banner.done{opacity:.75}
 .ch-reward{font-family:var(--f-display);font-size:26px!important;color:var(--gold)!important}
+/* ---- min prices ---- */
+.smin{display:block;font:700 11px var(--f-num);color:#ffd56b;background:#ffc83d14;border:1px solid #ffc83d40;border-radius:999px;padding:2px 8px;margin:2px auto 0;width:max-content;max-width:100%}
+.sp .smin{font-size:9px;padding:1px 5px;margin-top:1px}
+.lot .smin{margin-top:-2px}
 /* ---- chat ---- */
 .chatcard{max-width:460px!important;text-align:left;gap:10px}
 .chatcard h3{text-align:center}
@@ -801,7 +805,7 @@ body.lowfx .shop-btn .cart svg{filter:none}
     <div class="stabs" id="stabs">
       <button type="button" class="on" data-s="cases">Кейсы</button>
       <button type="button" data-s="coll">Коллекция <span id="collN"></span></button>
-      <button type="button" hidden data-s="marketX">Торговая площадка <span class="newb" id="mkN" hidden></span></button>
+      <button type="button" data-s="market">Торговая площадка <span class="newb" id="mkN" hidden></span></button>
     </div>
     <div id="shopBody"></div>
   </div>
@@ -981,6 +985,19 @@ body.lowfx .shop-btn .cart svg{filter:none}
     <div class="btns"><button class="ghost" id="rbCancel" type="button">Отмена</button><button class="primary" id="rbConfirm" type="button" style="background:#5de0ff;color:#0b1624">Переродиться</button></div>
   </div>
 </div>
+<div class="modal" id="sellModal" hidden>
+  <div class="mcard wide" style="max-width:560px;text-align:left">
+    <h3 style="text-align:center">Выставить скин</h3>
+    <div class="alabel">Какой скин продаёшь</div>
+    <div class="sellpick" id="sellPick"></div>
+    <div class="seg" id="sellType"><button type="button" class="on" data-t="coins">За монеты</button><button type="button" data-t="skin">Обмен на скин</button></div>
+    <input class="ainp" id="sellPrice" inputmode="numeric" placeholder="Цена, например 500000 или 50м" aria-label="Цена">
+    <select class="asel" id="sellWant" hidden aria-label="Какой скин хочешь взамен"></select>
+    <p class="note" id="sellHint">Скин уходит с твоего аккаунта, пока лот висит на площадке. Снять лот можно в любой момент. Комиссия площадки 5% с продажи за монеты.</p>
+    <p class="err" id="sellErr"></p>
+    <div class="btns"><button class="ghost" id="sellCancel" type="button">Отмена</button><button class="primary" id="sellGo" type="button">Выставить</button></div>
+  </div>
+</div>
 <div class="modal" id="achModal" hidden>
   <div class="mcard wide">
     <h3>Достижения</h3>
@@ -1099,6 +1116,14 @@ const SKINS=[
   {id:'void',    n:'Чёрная дыра',r:4, c:['#ff6af5','#1a0026','#000000'], e:['#12001c','#c04dff'], sym:'●', symC:'#000', pat:'swirl', em:'#b100ff', ei:.8, anim:'swirl'},
 ];
 const SK=Object.fromEntries(SKINS.map(s=>[s.id,s]));
+/* минимальная цена скина на торговой площадке (за монеты) */
+const MINP={
+  copper:1.2e9,silver:3e9,iron:2e9,bronze:1.5e9,rust:1e9,
+  emerald:2e10,sapphire:2.5e10,night:3e10,ruby:1.8e10,mint:1e10,melon:1.2e10,chess:1.5e10,
+  amethyst:9e10,neon:1e11,lava:1.2e11,toxic:7.5e10,camo:6e10,cyber:1.5e11,
+  ice:5e11,holo:6e11,cosmos:7.5e11,aurora:9e11,dragon:1.2e12,
+  meteor:3e12,sun:4e12,emperor:5e12,phoenix:6e12,diamond:8e12,void:1e13};
+const minPrice=id=>MINP[id]||0;
 const CASES=[
   {id:'basic',  n:'Стартовый кейс',   tag:'СТАРТ',  sub:'Почти всегда обычные. Мифик 0,01%',      price:2000,  c:'#9aa3b5', w:[80,17,2.7,.29,.01]},
   {id:'street', n:'Уличный кейс',     tag:'УЛИЦА',  sub:'Чаще редкие. Легендарка 0,9%',           price:12000, c:'#2fc9a4', w:[70,24,5,.9,.1]},
@@ -1534,7 +1559,7 @@ function centerHit(auto){
   else{const r=btn.getBoundingClientRect();const lx=Math.random()*1.2-.6,ly=Math.random()*1.2-.6;hit({lx,ly},{x:r.left+r.width/2+lx*r.width*.35,y:r.top+r.height/2-ly*r.height*.35},auto);}
 }
 btn.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();centerHit(false);}});
-const anyOpen=()=>!$('token').hidden||!$('admin').hidden||!$('rebirth').hidden||!$('rbModal').hidden||!$('settings').hidden||!$('modal').hidden||!$('roll').hidden||!$('achModal').hidden||!$('lbModal').hidden||!$('shop').hidden||!$('dailyModal').hidden||!$('planet').hidden||!$('chatModal').hidden||!$('chModal').hidden;
+const anyOpen=()=>!$('token').hidden||!$('sellModal').hidden||!$('admin').hidden||!$('rebirth').hidden||!$('rbModal').hidden||!$('settings').hidden||!$('modal').hidden||!$('roll').hidden||!$('achModal').hidden||!$('lbModal').hidden||!$('shop').hidden||!$('dailyModal').hidden||!$('planet').hidden||!$('chatModal').hidden||!$('chModal').hidden;
 document.addEventListener('keydown',e=>{if(e.code==='Space'&&!e.repeat&&!anyOpen()){e.preventDefault();centerHit(false);}if(e.key==='Escape'&&!$('shop').hidden&&$('roll').hidden)closeShop();if(e.key==='Escape'&&!$('settings').hidden&&$('modal').hidden&&$('lbModal').hidden)closeSet();if(e.key==='Escape'&&!$('rebirth').hidden&&$('rbModal').hidden)closeRb();if(e.key==='Escape'&&!$('admin').hidden)closeAdm();if(e.key==='Escape'&&!$('token').hidden)closeToken();if((e.key==='m'||e.key==='M'||e.code==='KeyM')&&!/INPUT|TEXTAREA/.test((e.target&&e.target.tagName)||'')){A.init();A.toggleAll();renderSet();toast(A.isMuted()?'Звук выключен':'Звук включён');}});
 
 function shake(){if(!SET.shake)return;document.body.animate([{transform:'translate(0,0)'},{transform:'translate(-6px,3px)'},{transform:'translate(5px,-3px)'},{transform:'translate(0,0)'}],{duration:240});}
@@ -1692,6 +1717,8 @@ function renderShop(){
     const lg=document.createElement('div');lg.className='legend';lg.style.marginTop='16px';
     lg.innerHTML=RAR.map(r=>`<span><b style="color:${r.c}">●</b> ${r.n} — +${Math.round(r.bonus*100)}% к клику</span>`).join('')+'<span>Дубликат возвращает 35% цены кейса</span>';
     body.appendChild(lg);
+  }else if(stab==='market'){
+    renderMarket(body);
   }else{
     const owned=SKINS.filter(s=>S.skins[s.id]).length;
     const h=document.createElement('div');h.className='coll-head';
@@ -1701,7 +1728,7 @@ function renderShop(){
     for(const s of SKINS){
       const own=!!S.skins[s.id],eq=S.skin===s.id;
       const b=document.createElement('button');b.type='button';b.className='skin'+(own?'':' locked')+(eq?' eq':'');b.style.setProperty('--rc',RAR[s.r].c);
-      b.innerHTML=`<div class="card"><img src="${preview(s.id)}" alt=""><span class="sn">${own?s.n:'???'}</span><span class="sr">${RAR[s.r].n}</span>${RAR[s.r].bonus?`<span class="sb">+${Math.round(RAR[s.r].bonus*100)}% к клику</span>`:'<span class="sb" style="color:var(--muted)">без бонуса</span>'}<span class="eqb">${own?(eq?'Надет':'Надеть'):(s.id==='meteor'?'100 метеоритов':s.excl?'За кристаллы':'Из кейса')}</span></div>`;
+      b.innerHTML=`<div class="card"><img src="${preview(s.id)}" alt=""><span class="sn">${own?s.n:'???'}</span><span class="sr">${RAR[s.r].n}</span>${RAR[s.r].bonus?`<span class="sb">+${Math.round(RAR[s.r].bonus*100)}% к клику</span>`:'<span class="sb" style="color:var(--muted)">без бонуса</span>'}${minPrice(s.id)?`<span class="smin">мин. ${fmt(minPrice(s.id))} ₸</span>`:''}<span class="eqb">${own?(eq?'Надет':'Надеть'):(s.id==='meteor'?'100 метеоритов':s.excl?'За кристаллы':'Из кейса')}</span></div>`;
       const card=b.querySelector('.card');
       if(!reduceM){b.addEventListener('pointermove',e=>{const r=card.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;card.style.transform=`rotateY(${(x-.5)*24}deg) rotateX(${(.5-y)*24}deg)`;card.style.setProperty('--mx',x*100+'%');card.style.setProperty('--my',y*100+'%');});
         b.addEventListener('pointerleave',()=>{card.style.transform='';});}
@@ -2224,6 +2251,151 @@ function doRebirth(force){
   burst(innerWidth/2,innerHeight/2,90,true,true,'#5de0ff');
   renderRb();renderPanel();renderStats();checkAch();save();pushScore(true);
 }
+
+/* ================= MARKET (player trading via Supabase) ================= */
+const MARKET_URL='https://ktkcathaqbvrmpetbrgv.supabase.co/functions/v1/market';
+const MK={open:[],mine:[],filter:-1,type:'coins',pick:null,busy:false,state:'off',status:'',owner:false,poll:0};
+S.mkDone=S.mkDone||{};
+const FEE=.05;
+const okSkin=id=>typeof id==='string'&&!!SK[id];
+function cleanLot(x){x=x||{};const priceType=x.priceType==='skin'?'skin':'coins';
+  return {id:Number(x.id)||0,sellerNick:cleanNick(x.sellerNick)||'Игрок',skin:x.skin,priceType,price:Math.max(0,Math.floor(Number(x.price)||0)),wantSkin:x.wantSkin,status:x.status,buyerNick:cleanNick(x.buyerNick),at:Number(x.at)||0,mine:!!x.mine};}
+const validLot=l=>okSkin(l.skin)&&(l.priceType==='coins'?l.price>0:okSkin(l.wantSkin));
+async function mkCall(body){
+  try{
+    const r=await fetch(MARKET_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign({initData:tg&&tg.initData||'',nick:S.nick||''},body))});
+    const d=await r.json();MK.state='live';MK.status=String(d.status||'');MK.owner=!!d.isOwner;
+    const all=(Array.isArray(d.lots)?d.lots:[]).map(cleanLot).filter(validLot);
+    MK.open=all.filter(l=>!l.mine);MK.mine=all.filter(l=>l.mine);
+    if(Array.isArray(d.pending))await settleMine(d.pending.map(cleanLot));
+    $('mkN').hidden=!MK.open.length;$('mkN').textContent=MK.open.length;
+    if(!$('shop').hidden&&stab==='market')renderShop();
+    return d;
+  }catch(e){MK.state='off';if(!$('shop').hidden&&stab==='market')renderShop();return null;}
+}
+async function settleMine(list){
+  const ack=[];
+  for(const l of list){
+    if(!l.id)continue;
+    if(S.mkDone[l.id]){ack.push(l.id);continue;}
+    if(l.status==='sold'){
+      if(l.priceType==='coins'){const got=Math.floor(l.price*(1-FEE));S.coins+=got;toast('Твой скин «'+(SK[l.skin]?SK[l.skin].n:'')+'» купил '+(l.buyerNick||'игрок')+': <b>+'+fmt(got)+' ₸</b>');}
+      else if(okSkin(l.wantSkin)){S.skins[l.wantSkin]=1;toast('Обмен состоялся: ты получил <b>'+SK[l.wantSkin].n+'</b>');}
+      A.reveal(2);burst(innerWidth/2,innerHeight/3,40,true,true);
+    }else if(l.status==='cancelled'||l.status==='removed'){
+      if(okSkin(l.skin))S.skins[l.skin]=1;
+      if(l.status==='removed')toast('Твой лот «'+(SK[l.skin]?SK[l.skin].n:'')+'» снят модератором, скин вернулся');
+    }else continue;
+    S.mkDone[l.id]=1;ack.push(l.id);
+  }
+  if(ack.length){
+    const ks=Object.keys(S.mkDone);if(ks.length>300)ks.slice(0,ks.length-300).forEach(k=>delete S.mkDone[k]);
+    save();renderStats();checkAch();
+    try{await fetch(MARKET_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({initData:tg&&tg.initData||'',action:'ack',ids:ack})});}catch(e){}
+  }
+}
+function marketBlocker(){
+  if(!tg||!tg.initData)return 'Торговать можно только в игре внутри Telegram.';
+  if(MK.state!=='live')return 'Подключаемся к площадке…';
+  if(MK.status==='no_bot_token')return 'Площадка ещё не настроена: нужен токен бота.';
+  if(MK.status==='bad_signature')return 'Не удалось подтвердить аккаунт Telegram. Перезапусти игру из бота.';
+  if(MK.status==='banned')return 'Торговля для тебя закрыта.';
+  if(!S.nick)return 'Задай ник в рейтинге, чтобы торговать.';
+  return '';
+}
+function lotCard(l,mine){
+  const sk=SK[l.skin];const el=document.createElement('div');el.className='lot'+(mine?' mine':'');el.style.setProperty('--rc',RAR[sk.r].c);
+  el.innerHTML=`<img class="sk" src="${preview(l.skin)}" alt=""><span class="sn"></span><span class="sr">${RAR[sk.r].n}</span><span class="by"></span>`;
+  el.querySelector('.sn').textContent=sk.n;el.querySelector('.by').textContent=mine?'твой лот':'продаёт '+l.sellerNick;
+  if(l.priceType==='coins'){const p=document.createElement('span');p.className='price';p.textContent=fmt(l.price)+' ₸';el.appendChild(p);}
+  if(minPrice(l.skin)){const mn=document.createElement('span');mn.className='smin';mn.textContent='мин. цена '+fmt(minPrice(l.skin))+' ₸';el.appendChild(mn);}
+  else{const w=SK[l.wantSkin];const sw=document.createElement('span');sw.className='swap';sw.style.setProperty('--wc',RAR[w.r].c);sw.innerHTML=`обмен на <img src="${preview(l.wantSkin)}" alt="">`;const t=document.createElement('span');t.textContent=w.n;sw.appendChild(t);el.appendChild(sw);}
+  const b=document.createElement('button');b.type='button';b.className='lb2'+(l.priceType==='skin'?' sw':'');
+  if(mine){b.textContent='Снять с продажи';b.className='lb2';b.style.background='var(--ink-3)';b.style.color='var(--text)';b.onclick=()=>cancelLot(l);}
+  else{
+    const block=marketBlocker();
+    let why='';if(block)why='Недоступно';else if(S.skins[l.skin])why='Уже есть';else if(l.priceType==='coins'&&S.coins<l.price)why='Не хватает монет';else if(l.priceType==='skin'&&!S.skins[l.wantSkin])why='Нет скина для обмена';
+    b.textContent=why||(l.priceType==='coins'?'Купить':'Обменять');b.disabled=!!why;b.onclick=()=>buyLot(l);
+  }
+  el.appendChild(b);
+  if(MK.owner&&!mine){const x=document.createElement('button');x.type='button';x.className='xdel';x.textContent='Снять (админ)';x.onclick=()=>cancelLot(l,true);el.appendChild(x);}
+  return el;
+}
+function renderMarket(body){
+  const top=document.createElement('div');top.className='mk-top';
+  const block=marketBlocker();
+  const n=document.createElement('p');n.className='note';n.textContent=block||'Покупай скины у других игроков за монеты или меняйся. Комиссия площадки 5% с продажи за монеты.';
+  const sb=document.createElement('button');sb.type='button';sb.className='primary';sb.textContent='Продать скин';sb.disabled=!!block;if(block)sb.style.opacity='.5';sb.onclick=openSell;
+  top.append(n,sb);body.appendChild(top);
+  const f=document.createElement('div');f.className='mk-filters';
+  [[-1,'Все'],[1,'Редкие+'],[2,'Эпики+'],[3,'Легендарки+'],[4,'Мифики']].forEach(([v,t])=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.className=MK.filter===v?'on':'';if(v>=0)b.style.setProperty('--fc',RAR[v].c);b.onclick=()=>{MK.filter=v;renderShop();};f.appendChild(b);});
+  body.appendChild(f);
+  const mine=MK.mine;
+  if(mine.length){const h=document.createElement('div');h.className='alabel';h.textContent='Мои лоты · '+mine.length+' из 8';body.appendChild(h);const g=document.createElement('div');g.className='lots';mine.forEach(l=>g.appendChild(lotCard(l,true)));body.appendChild(g);}
+  const list=MK.open.filter(l=>MK.filter<0||SK[l.skin].r>=MK.filter).sort((a,b)=>SK[b.skin].r-SK[a.skin].r||b.at-a.at);
+  const h2=document.createElement('div');h2.className='alabel';h2.textContent='На продаже · '+list.length;body.appendChild(h2);
+  if(!list.length){const e=document.createElement('div');e.className='lb-empty';e.textContent=MK.state==='live'?'Пока никто ничего не продаёт. Выстави свой скин первым.':'Подключаемся к площадке…';body.appendChild(e);}
+  else{const g=document.createElement('div');g.className='lots';list.forEach(l=>g.appendChild(lotCard(l,false)));body.appendChild(g);}
+}
+async function buyLot(l){
+  if(MK.busy)return;const block=marketBlocker();if(block){toast(block);return;}
+  if(S.skins[l.skin]){toast('У тебя уже есть этот скин');return;}
+  if(l.priceType==='coins'&&S.coins<l.price){A.deny();toast('Не хватает монет');return;}
+  if(l.priceType==='skin'&&!S.skins[l.wantSkin]){A.deny();toast('Нужен скин «'+SK[l.wantSkin].n+'»');return;}
+  MK.busy=true;
+  const d=await mkCall({action:'buy',id:l.id});
+  MK.busy=false;
+  if(!d){toast('Нет связи с площадкой. Попробуй ещё раз.');return;}
+  if(d.status!=='bought'||!d.result){toast(d.status==='gone'?'Лот уже продан или снят':d.status==='banned'?'Торговля для тебя закрыта':'Не получилось купить. Попробуй ещё раз.');return;}
+  const cur=cleanLot(d.result);
+  if(cur.priceType==='coins')S.coins=Math.max(0,S.coins-cur.price);else{delete S.skins[cur.wantSkin];if(S.skin===cur.wantSkin){S.skin='classic';showSkin();}}
+  if(okSkin(cur.skin))S.skins[cur.skin]=1;S.trades=(S.trades||0)+1;
+  const r=SK[cur.skin]?SK[cur.skin].r:0;
+  A.reveal(r);burst(innerWidth/2,innerHeight/2,50,r>=3,true,RAR[r].c);
+  toast('Новый скин: <b>'+(SK[cur.skin]?SK[cur.skin].n:'')+'</b>');save();renderStats();checkAch();renderShop();
+}
+async function cancelLot(l,byAdmin){
+  if(MK.busy)return;MK.busy=true;
+  const d=await mkCall({action:'cancel',id:l.id});
+  MK.busy=false;
+  if(!d){toast('Нет связи с площадкой');return;}
+  if(d.status==='cancelled'){toast(byAdmin?'Лот снят, скин вернётся продавцу':'Лот снят, скин вернулся');A.ui();}
+  else toast(d.status==='gone'?'Лот уже продан':'Не удалось снять лот');
+}
+function openSell(){
+  const block=marketBlocker();if(block){toast(block);return;}
+  if(MK.mine.length>=8){toast('Можно держать не больше 8 лотов');return;}
+  MK.pick=null;MK.type='coins';$('sellErr').textContent='';$('sellPrice').value='';
+  const pick=$('sellPick');pick.innerHTML='';
+  const own=SKINS.filter(k=>S.skins[k.id]&&k.id!=='classic').sort((a,b)=>b.r-a.r);
+  if(!own.length){pick.innerHTML='<div class="lb-empty" style="grid-column:1/-1">Нет скинов для продажи. «Классику» продать нельзя.</div>';}
+  own.forEach(k=>{const b=document.createElement('button');b.type='button';b.className='sp';b.style.setProperty('--rc',RAR[k.r].c);b.innerHTML=`<img src="${preview(k.id)}" alt="">`;const t=document.createElement('span');t.textContent=k.n;b.appendChild(t);const mn=document.createElement('span');mn.className='smin';mn.textContent='от '+fmt(minPrice(k.id));b.appendChild(mn);
+    b.onclick=()=>{MK.pick=k.id;pick.querySelectorAll('.sp').forEach(x=>x.classList.toggle('on',x===b));fillWant();const mp=minPrice(k.id);$('sellPrice').placeholder='Цена от '+fmt(mp)+' ₸';if(!(parseNum($('sellPrice').value)>=mp))$('sellPrice').value=fmt(mp).replace(',','.');$('sellErr').textContent='';};pick.appendChild(b);});
+  fillWant();syncSellType();$('sellModal').hidden=false;
+}
+function fillWant(){const w=$('sellWant');const cur=w.value;w.innerHTML='';SKINS.filter(k=>k.id!=='classic'&&k.id!==MK.pick).sort((a,b)=>b.r-a.r).forEach(k=>{const o=document.createElement('option');o.value=k.id;o.textContent=k.n+' · '+RAR[k.r].n;w.appendChild(o);});if(cur&&cur!==MK.pick)w.value=cur;}
+function syncSellType(){$('sellType').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.t===MK.type));$('sellPrice').hidden=MK.type!=='coins';$('sellWant').hidden=MK.type!=='skin';}
+$('sellType').querySelectorAll('button').forEach(b=>b.onclick=()=>{MK.type=b.dataset.t;syncSellType();});
+$('sellCancel').onclick=()=>{$('sellModal').hidden=true;};
+$('sellGo').onclick=async()=>{
+  if(MK.busy)return;$('sellErr').textContent='';
+  if(!MK.pick||!S.skins[MK.pick]){$('sellErr').textContent='Выбери скин.';return;}
+  const lot={action:'sell',skin:MK.pick,priceType:MK.type};
+  if(MK.type==='coins'){const p=parseNum($('sellPrice').value);if(!(p>0)||p>1e18){$('sellErr').textContent='Укажи цену, например 500б или 1т.';return;}if(p<minPrice(MK.pick)){$('sellErr').textContent='Минимальная цена «'+SK[MK.pick].n+'» — '+fmt(minPrice(MK.pick))+' ₸.';return;}lot.price=p;}
+  else{lot.wantSkin=$('sellWant').value;if(!okSkin(lot.wantSkin)){$('sellErr').textContent='Выбери, что хочешь взамен.';return;}}
+  MK.busy=true;$('sellGo').disabled=true;
+  // скин убираем сразу, чтобы его нельзя было продать дважды; если сервер откажет — вернём
+  const sk=lot.skin;delete S.skins[sk];const wasEq=S.skin===sk;if(wasEq){S.skin='classic';showSkin();}save();
+  const d=await mkCall(lot);
+  MK.busy=false;$('sellGo').disabled=false;
+  if(d&&d.status==='listed'){renderStats();$('sellModal').hidden=true;A.buy();toast('Скин «'+SK[sk].n+'» выставлен на площадку');renderShop();return;}
+  S.skins[sk]=1;if(wasEq){S.skin=sk;showSkin();}save();
+  $('sellErr').textContent=!d?'Нет связи с площадкой. Попробуй ещё раз.':({too_cheap:'Цена ниже минимальной для этого скина.',too_many:'Можно держать не больше 8 лотов.',bad_price:'Неверная цена.',banned:'Торговля для тебя закрыта.',bad_lot:'Этот скин нельзя выставить.'}[d.status]||'Не получилось выставить лот. Попробуй ещё раз.');
+};
+SCREENS.unshift(['sellModal',()=>{$('sellModal').hidden=true;}]);
+setTimeout(()=>mkCall({action:'list'}),2500);
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-s="market"]');if(t){MK.poll=Date.now();mkCall({action:'list'});}});
+setInterval(()=>{if(document.hidden)return;const on=!$('shop').hidden&&stab==='market';if(on||Date.now()-MK.poll>60000){MK.poll=Date.now();mkCall({action:'list'});}},6000);
 
 /* ================= ADMIN PANEL (owner only) ================= */
 const admEl=$('admin');
