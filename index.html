@@ -629,6 +629,24 @@ body.lowfx .modal{background:#07040ff2}
 body.lowfx .glow{filter:none;animation:none;opacity:.8}
 body.lowfx .rays{animation-duration:60s!important}
 body.lowfx .shop-btn .cart svg{filter:none}
+
+@media (max-width:480px){.hud-in{grid-template-columns:minmax(0,1fr);grid-template-areas:"r" "lvl" "mid";gap:8px}.hud-r{justify-self:stretch;justify-content:space-between}.lvl{justify-self:stretch;padding:5px 14px 5px 5px}.lvl .hex{transform:scale(.8);margin:-6px}.hud-r{gap:4px;padding:4px}.hud-r .rbtn{width:38px;height:38px}.hud-r .rbtn i{width:24px;height:24px}.hud-r .rbtn .n{font-size:9px;padding:0 4px;right:-4px}}
+@media (max-width:370px){.hud-r .rbtn{width:34px;height:34px}.hud-r .rbtn i{width:22px;height:22px}}
+/* ---- chat ---- */
+.chatcard{max-width:460px!important;text-align:left;gap:10px}
+.chatcard h3{text-align:center}
+.chatnote{font-size:12.5px!important;text-align:center}
+.chatlist{height:min(52vh,420px);overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:4px 2px;overscroll-behavior:contain}
+.cmsg{max-width:85%;align-self:flex-start;background:#2a2048;border:1px solid var(--line);border-radius:14px 14px 14px 4px;padding:7px 10px;font-size:14px;line-height:1.35;word-wrap:break-word;overflow-wrap:anywhere}
+.cmsg.me{align-self:flex-end;background:#3b2b66;border-color:#ffc83d55;border-radius:14px 14px 4px 14px}
+.cmsg.own{border-color:#ffc83d}
+.cmsg .ch{display:flex;gap:6px;align-items:baseline;font-size:11.5px;margin-bottom:2px}
+.cmsg .cn{font-weight:700;color:var(--gold)}
+.cmsg .ct{color:var(--muted)}
+.cmsg .cdel{margin-left:auto;background:none;border:0;color:#ff7a9a;cursor:pointer;font-size:12px;padding:0 2px}
+.chatform{display:flex;gap:8px}
+.chatform input{flex:1;min-width:0;background:#120d20;border:1px solid var(--line);border-radius:12px;color:#fff;padding:10px 12px;font:15px var(--f-body)}
+.chatform button{padding:0 16px;border-radius:12px}
 </style>
 </head>
 <body>
@@ -672,6 +690,7 @@ body.lowfx .shop-btn .cart svg{filter:none}
     <div class="hud-r glass">
       <button class="rbtn" id="dailyBtn" type="button" aria-label="Ежедневные награды"><i data-icon="calendar"></i><span class="n" id="dailyN" hidden>1</span></button>
       <button class="rbtn" id="lbBtn" type="button" aria-label="Лидерборд"><i data-icon="medal"></i><span class="n" id="myRank" hidden>#1</span></button>
+      <button class="rbtn" id="chatBtn" type="button" aria-label="Чат" hidden><i data-icon="chat"></i><span class="n" id="chatN" hidden>1</span></button>
       <button class="rbtn" id="achBtn" type="button" aria-label="Достижения"><i data-icon="trophy"></i><span class="n" id="achN">0</span></button>
       <button class="rbtn" id="admBtn" type="button" aria-label="Админ-панель" hidden><i data-icon="crown"></i></button>
       <button class="rbtn" id="setBtn" type="button" aria-label="Настройки"><i data-icon="cog"></i></button>
@@ -925,6 +944,19 @@ body.lowfx .shop-btn .cart svg{filter:none}
     <div class="btns"><button class="ghost" id="lbClose" type="button">Закрыть</button></div>
   </div>
 </div>
+<div class="modal" id="chatModal" hidden>
+  <div class="mcard wide chatcard">
+    <h3>Чат игроков</h3>
+    <p class="chatnote" id="chatNote">Пиши вежливо: мат скрывается, спам блокируется.</p>
+    <div class="chatlist" id="chatList"></div>
+    <form class="chatform" id="chatForm" autocomplete="off">
+      <input id="chatInput" maxlength="200" placeholder="Сообщение…" aria-label="Сообщение">
+      <button class="primary" type="submit" id="chatSend">➤</button>
+    </form>
+    <p class="err" id="chatErr"></p>
+    <div class="btns"><button class="ghost" id="chatClose" type="button">Закрыть</button></div>
+  </div>
+</div>
 <div class="modal" id="rbModal" hidden>
   <div class="mcard">
     <h3>Переродиться?</h3>
@@ -1125,6 +1157,7 @@ const ICON=(()=>{
     crown:`<path class="o" d="M5 16l9 8 10-15 10 15 9-8-4 24H9z" fill="url(#gGold)"/><rect class="o" x="9" y="38" width="30" height="6" rx="2" fill="url(#gGold)"/><circle class="o" cx="24" cy="29" r="4" fill="url(#gRose)"/><circle class="o" cx="14" cy="31" r="2.6" fill="url(#gCyan)"/><circle class="o" cx="34" cy="31" r="2.6" fill="url(#gCyan)"/><circle class="o" cx="5" cy="15" r="2.6" fill="url(#gGold)"/><circle class="o" cx="43" cy="15" r="2.6" fill="url(#gGold)"/><circle class="o" cx="24" cy="8" r="3" fill="url(#gGold)"/><path d="M12 22l4 4" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".7"/>`,
     gift:`<rect class="o" x="6" y="20" width="36" height="24" rx="4" fill="url(#gRose)"/><rect class="o" x="3" y="13" width="42" height="10" rx="3" fill="url(#gRose)"/><rect x="20" y="13" width="8" height="31" fill="url(#gGold)" class="o"/><path class="o" d="M24 13c-3-8-14-10-14-4 0 4 8 4 14 4zM24 13c3-8 14-10 14-4 0 4-8 4-14 4z" fill="url(#gGold)"/><path d="M9 17h9" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".6"/>${spark(42,6,4)}${spark(5,6,3)}`,
     boss:`<path class="o" d="M9 14 4 3l12 6M39 14l5-11-12 6" fill="url(#gRose)"/><circle class="o" cx="24" cy="27" r="18" fill="url(#gRose)"/><circle cx="24" cy="27" r="13" fill="none" stroke="#7a1238" stroke-width="1.5"/><path d="M13 20l8 4M35 20l-8 4" stroke="#140c26" stroke-width="3" stroke-linecap="round"/><circle cx="18" cy="27" r="2.8" fill="#fff6c8"/><circle cx="30" cy="27" r="2.8" fill="#fff6c8"/><path d="M16 37q8-6 16 0" stroke="#140c26" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M19 36l2-3 2 3 2-3 2 3 2-3" stroke="#fff6c8" stroke-width="1.4" fill="none"/><ellipse class="hl" cx="15" cy="16" rx="3" ry="1.8" transform="rotate(-35 15 16)"/>`,
+    chat:`<rect class="o" x="4" y="6" width="40" height="28" rx="9" fill="url(#gViolet)"/><path class="o" d="M13 32l-2 11 11-9" fill="url(#gViolet)"/><circle cx="15" cy="20" r="3" fill="#fff"/><circle cx="24" cy="20" r="3" fill="#fff"/><circle cx="33" cy="20" r="3" fill="#fff"/>`,
     calendar:`<rect class="o" x="5" y="9" width="38" height="35" rx="6" fill="url(#gSteel)"/><path class="o" d="M5 15a6 6 0 0 1 6-6h26a6 6 0 0 1 6 6v6H5z" fill="url(#gGreen)"/><rect class="o" x="13" y="4" width="5" height="10" rx="2" fill="url(#gSteel)"/><rect class="o" x="30" y="4" width="5" height="10" rx="2" fill="url(#gSteel)"/><path class="o" d="M17 32l5 5 10-11" fill="none" stroke-width="3"/><path d="M17 32l5 5 10-11" stroke="#1f7a3a" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 12h10" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".7"/>`,
     chest:`<path class="o" d="M6 22a18 12 0 0 1 36 0v4H6z" fill="url(#gRose)"/><rect class="o" x="6" y="24" width="36" height="20" rx="3" fill="url(#gRose)"/><rect class="o" x="4" y="22" width="40" height="5" rx="2" fill="url(#gGold)"/><rect class="o" x="20" y="10" width="8" height="34" fill="url(#gGold)"/><rect class="o" x="20" y="25" width="8" height="9" rx="2" fill="#5a3500"/><circle cx="24" cy="29" r="1.6" fill="#ffd56b"/><path d="M10 18q6-6 10-7" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" opacity=".6"/>${spark(42,8,4)}${spark(6,8,3)}`,
     planet:`<circle class="o" cx="24" cy="24" r="14" fill="url(#gCyan)"/><path d="M14 18q5 2 6 7t7 6M28 12q2 5 8 6" stroke="#1f7a3a" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="24" cy="26" rx="22" ry="6" fill="none" stroke="#140c26" stroke-width="5" transform="rotate(-18 24 26)"/><ellipse cx="24" cy="26" rx="22" ry="6" fill="none" stroke="url(#gGold)" stroke-width="2.6" transform="rotate(-18 24 26)"/><path d="M15 15q3-4 8-5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" opacity=".8"/>${spark(42,8,3)}`,
@@ -1484,7 +1517,7 @@ function centerHit(auto){
   else{const r=btn.getBoundingClientRect();const lx=Math.random()*1.2-.6,ly=Math.random()*1.2-.6;hit({lx,ly},{x:r.left+r.width/2+lx*r.width*.35,y:r.top+r.height/2-ly*r.height*.35},auto);}
 }
 btn.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();centerHit(false);}});
-const anyOpen=()=>!$('token').hidden||!$('admin').hidden||!$('rebirth').hidden||!$('rbModal').hidden||!$('settings').hidden||!$('modal').hidden||!$('roll').hidden||!$('achModal').hidden||!$('lbModal').hidden||!$('shop').hidden||!$('dailyModal').hidden||!$('planet').hidden;
+const anyOpen=()=>!$('token').hidden||!$('admin').hidden||!$('rebirth').hidden||!$('rbModal').hidden||!$('settings').hidden||!$('modal').hidden||!$('roll').hidden||!$('achModal').hidden||!$('lbModal').hidden||!$('shop').hidden||!$('dailyModal').hidden||!$('planet').hidden||!$('chatModal').hidden;
 document.addEventListener('keydown',e=>{if(e.code==='Space'&&!e.repeat&&!anyOpen()){e.preventDefault();centerHit(false);}if(e.key==='Escape'&&!$('shop').hidden&&$('roll').hidden)closeShop();if(e.key==='Escape'&&!$('settings').hidden&&$('modal').hidden&&$('lbModal').hidden)closeSet();if(e.key==='Escape'&&!$('rebirth').hidden&&$('rbModal').hidden)closeRb();if(e.key==='Escape'&&!$('admin').hidden)closeAdm();if(e.key==='Escape'&&!$('token').hidden)closeToken();if((e.key==='m'||e.key==='M'||e.code==='KeyM')&&!/INPUT|TEXTAREA/.test((e.target&&e.target.tagName)||'')){A.init();A.toggleAll();renderSet();toast(A.isMuted()?'Звук выключен':'Звук включён');}});
 
 function shake(){if(!SET.shake)return;document.body.animate([{transform:'translate(0,0)'},{transform:'translate(-6px,3px)'},{transform:'translate(5px,-3px)'},{transform:'translate(0,0)'}],{duration:240});}
@@ -1999,6 +2032,64 @@ $('nickForm').addEventListener('submit',e=>{
 function openLB(){$('nickInput').value=S.nick||'';$('nickErr').textContent='';renderLB();$('lbModal').hidden=false;pushScore(false);}
 $('lbBtn').onclick=openLB;$('lbOpen').onclick=openLB;
 $('lbClose').onclick=()=>{$('lbModal').hidden=true;};
+
+/* --- chat: Supabase edge function, sender verified by Telegram signature --- */
+const CHAT_URL='https://ktkcathaqbvrmpetbrgv.supabase.co/functions/v1/chat';
+let chatMsgs=[],chatOwner=false,chatBusy=false,chatSeen=0,chatTimer=0;
+try{chatSeen=Number(localStorage.getItem('zt-chat-seen'))||0;}catch(e){}
+const CHAT_ERR={slow:'Не так быстро — подожди пару секунд.',repeat:'Это сообщение уже отправлено.',banned:'Тебе запрещено писать в чат.',empty:'Сообщение пустое.',
+  no_bot_token:'Чат ещё не настроен: нужен токен бота.',bad_signature:'Не удалось подтвердить аккаунт Telegram. Перезапусти игру из бота.',write_failed:'Сервер не принял сообщение, попробуй ещё раз.',forbidden:'Нет прав.'};
+async function chatCall(body){
+  if(chatBusy&&body.action==='list')return null;
+  chatBusy=true;
+  try{
+    const r=await fetch(CHAT_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign({initData:tg&&tg.initData||''},body))});
+    const d=await r.json();chatBusy=false;
+    if(Array.isArray(d.messages)){chatMsgs=d.messages;chatOwner=!!d.isOwner;renderChat();}
+    return d;
+  }catch(e){chatBusy=false;$('chatNote').textContent='Нет связи с чатом. Пробуем снова…';return null;}
+}
+function chatTime(at){const d=new Date(at);if(isNaN(d))return '';const p=n=>String(n).padStart(2,'0');const today=new Date().toDateString()===d.toDateString();return (today?'':p(d.getDate())+'.'+p(d.getMonth()+1)+' ')+p(d.getHours())+':'+p(d.getMinutes());}
+function renderChat(){
+  const box=$('chatList'),open=!$('chatModal').hidden;
+  const atBottom=box.scrollHeight-box.scrollTop-box.clientHeight<60;
+  const sig=chatMsgs.map(m=>m.id).join(',')+'|'+chatOwner;
+  if(box.dataset.sig!==sig){
+    box.dataset.sig=sig;box.innerHTML='';
+    if(!chatMsgs.length){const d=document.createElement('div');d.className='lb-empty';d.textContent='Здесь пока тихо. Напиши первым!';box.appendChild(d);}
+    for(const m of chatMsgs){
+      const el=document.createElement('div');el.className='cmsg'+(m.me?' me':'')+(m.owner?' own':'');
+      const h=document.createElement('div');h.className='ch';
+      const n=document.createElement('span');n.className='cn';n.textContent=(m.owner?'👑 ':'')+(m.nick||'Игрок');
+      const t=document.createElement('span');t.className='ct';t.textContent=chatTime(m.at);
+      h.append(n,t);
+      if(chatOwner){const x=document.createElement('button');x.type='button';x.className='cdel';x.textContent='удалить';x.onclick=()=>chatCall({action:'delete',id:m.id});h.appendChild(x);}
+      const b=document.createElement('div');b.textContent=m.text;
+      el.append(h,b);box.appendChild(el);
+    }
+    if(atBottom||box.dataset.first!=='1'){box.scrollTop=box.scrollHeight;box.dataset.first='1';}
+  }
+  const last=chatMsgs.length?chatMsgs[chatMsgs.length-1].id:0;
+  if(open&&last>chatSeen){chatSeen=last;try{localStorage.setItem('zt-chat-seen',String(last));}catch(e){}}
+  const unread=chatMsgs.filter(m=>m.id>chatSeen&&!m.me).length;
+  $('chatN').hidden=!unread||open;$('chatN').textContent=unread>9?'9+':unread;
+  if(open)$('chatNote').textContent=!tg||!tg.initData?'Читать можно везде, а писать — только из игры в Telegram.':'Пиши вежливо: мат скрывается, спам блокируется.';
+}
+function openChat(){$('chatErr').textContent='';$('chatModal').hidden=false;$('chatList').dataset.first='';$('chatList').dataset.sig='';renderChat();chatCall({action:'list'});clearInterval(chatTimer);chatTimer=setInterval(()=>{if(!$('chatModal').hidden&&!document.hidden)chatCall({action:'list'});},4000);}
+function closeChat(){$('chatModal').hidden=true;clearInterval(chatTimer);renderChat();}
+$('chatBtn').hidden=false;$('chatBtn').onclick=openChat;$('chatClose').onclick=closeChat;
+$('chatForm').addEventListener('submit',async e=>{
+  e.preventDefault();const inp=$('chatInput'),txt=inp.value.trim();if(!txt)return;
+  if(!tg||!tg.initData){$('chatErr').textContent='Писать в чат можно только из игры в Telegram.';return;}
+  $('chatSend').disabled=true;$('chatErr').textContent='';
+  const d=await chatCall({action:'send',text:txt,nick:S.nick||''});
+  $('chatSend').disabled=false;
+  if(d&&d.status==='sent'){inp.value='';const box=$('chatList');box.scrollTop=box.scrollHeight;hap('success');}
+  else $('chatErr').textContent=d?(CHAT_ERR[d.status]||'Не получилось отправить.'):'Нет связи с чатом.';
+});
+SCREENS.unshift(['chatModal',()=>closeChat()]);
+setTimeout(()=>chatCall({action:'list'}),3000);
+setInterval(()=>{if($('chatModal').hidden&&!document.hidden)chatCall({action:'list'});},30000);
 
 renderLB();
 cloudLoad().then(()=>pushScore(true));
