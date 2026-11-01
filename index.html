@@ -632,6 +632,12 @@ body.lowfx .shop-btn .cart svg{filter:none}
 
 @media (max-width:480px){.hud-in{grid-template-columns:minmax(0,1fr);grid-template-areas:"r" "lvl" "mid";gap:8px}.hud-r{justify-self:stretch;justify-content:space-between}.lvl{justify-self:stretch;padding:5px 14px 5px 5px}.lvl .hex{transform:scale(.8);margin:-6px}.hud-r{gap:4px;padding:4px}.hud-r .rbtn{width:38px;height:38px}.hud-r .rbtn i{width:24px;height:24px}.hud-r .rbtn .n{font-size:9px;padding:0 4px;right:-4px}}
 @media (max-width:370px){.hud-r .rbtn{width:34px;height:34px}.hud-r .rbtn i{width:22px;height:22px}}
+/* ---- channel ---- */
+.ch-banner{border-color:#5ab0ff88;background:linear-gradient(180deg,#1d4f8f,#122d55)!important}
+.ch-banner .cn{background:radial-gradient(circle at 35% 30%,#bfe3ff,#2aa3ef 55%,#14639a)!important;box-shadow:0 0 0 2px #0e4a75!important;color:#fff!important;font:15px var(--f-body)!important}
+.ch-banner b{color:#8fd0ff!important}
+.ch-banner.done{opacity:.75}
+.ch-reward{font-family:var(--f-display);font-size:26px!important;color:var(--gold)!important}
 /* ---- chat ---- */
 .chatcard{max-width:460px!important;text-align:left;gap:10px}
 .chatcard h3{text-align:center}
@@ -713,6 +719,7 @@ body.lowfx .shop-btn .cart svg{filter:none}
       <button id="coinBtn" type="button" aria-label="Нажать на монету"></button>
       <div class="combo-lbl" id="comboTxt">КОМБО ×1,0</div>
     </div>
+    <button class="tk-banner ch-banner" id="chBanner" type="button" hidden><span class="cn">✈</span><span id="chBannerTxt">Подпишись на канал — бонус</span><b>→</b></button>
     <button class="tk-banner" id="tkBanner" type="button"><span class="cn">₸</span><span id="tkBannerTxt">Скоро: мемкоин $TENGE</span><b>→</b></button>
     <div class="under">Скин <b id="skinName">Классика</b> · <span id="skinBonus">+0%</span> к клику · <span id="clicks">0</span> кликов</div>
   </section>
@@ -955,6 +962,16 @@ body.lowfx .shop-btn .cart svg{filter:none}
     </form>
     <p class="err" id="chatErr"></p>
     <div class="btns"><button class="ghost" id="chatClose" type="button">Закрыть</button></div>
+  </div>
+</div>
+<div class="modal" id="chModal" hidden>
+  <div class="mcard">
+    <h3>Наш Telegram-канал</h3>
+    <p>Новости игры, промокоды и розыгрыши. Подпишись и получи награду:</p>
+    <p class="ch-reward" id="chReward">+0 ₸</p>
+    <div class="btns" style="flex-wrap:wrap"><button class="primary" id="chOpen" type="button">Открыть канал</button><button class="ghost" id="chCheck" type="button">Я подписался</button></div>
+    <p class="err" id="chErr"></p>
+    <div class="btns"><button class="ghost" id="chClose" type="button">Закрыть</button></div>
   </div>
 </div>
 <div class="modal" id="rbModal" hidden>
@@ -1517,7 +1534,7 @@ function centerHit(auto){
   else{const r=btn.getBoundingClientRect();const lx=Math.random()*1.2-.6,ly=Math.random()*1.2-.6;hit({lx,ly},{x:r.left+r.width/2+lx*r.width*.35,y:r.top+r.height/2-ly*r.height*.35},auto);}
 }
 btn.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();centerHit(false);}});
-const anyOpen=()=>!$('token').hidden||!$('admin').hidden||!$('rebirth').hidden||!$('rbModal').hidden||!$('settings').hidden||!$('modal').hidden||!$('roll').hidden||!$('achModal').hidden||!$('lbModal').hidden||!$('shop').hidden||!$('dailyModal').hidden||!$('planet').hidden||!$('chatModal').hidden;
+const anyOpen=()=>!$('token').hidden||!$('admin').hidden||!$('rebirth').hidden||!$('rbModal').hidden||!$('settings').hidden||!$('modal').hidden||!$('roll').hidden||!$('achModal').hidden||!$('lbModal').hidden||!$('shop').hidden||!$('dailyModal').hidden||!$('planet').hidden||!$('chatModal').hidden||!$('chModal').hidden;
 document.addEventListener('keydown',e=>{if(e.code==='Space'&&!e.repeat&&!anyOpen()){e.preventDefault();centerHit(false);}if(e.key==='Escape'&&!$('shop').hidden&&$('roll').hidden)closeShop();if(e.key==='Escape'&&!$('settings').hidden&&$('modal').hidden&&$('lbModal').hidden)closeSet();if(e.key==='Escape'&&!$('rebirth').hidden&&$('rbModal').hidden)closeRb();if(e.key==='Escape'&&!$('admin').hidden)closeAdm();if(e.key==='Escape'&&!$('token').hidden)closeToken();if((e.key==='m'||e.key==='M'||e.code==='KeyM')&&!/INPUT|TEXTAREA/.test((e.target&&e.target.tagName)||'')){A.init();A.toggleAll();renderSet();toast(A.isMuted()?'Звук выключен':'Звук включён');}});
 
 function shake(){if(!SET.shake)return;document.body.animate([{transform:'translate(0,0)'},{transform:'translate(-6px,3px)'},{transform:'translate(5px,-3px)'},{transform:'translate(0,0)'}],{duration:240});}
@@ -2090,6 +2107,42 @@ $('chatForm').addEventListener('submit',async e=>{
 SCREENS.unshift(['chatModal',()=>closeChat()]);
 setTimeout(()=>chatCall({action:'list'}),3000);
 setInterval(()=>{if($('chatModal').hidden&&!document.hidden)chatCall({action:'list'});},30000);
+
+/* --- Telegram channel: open + reward for subscribing (checked by the bot on the server) --- */
+const CHANNEL_URL='https://t.me/creatorsitec',CHANNEL_CHECK='https://ktkcathaqbvrmpetbrgv.supabase.co/functions/v1/channel';
+const chReward=()=>Math.floor(Math.max(25000,perSec()*900+clickValue()*300));
+function chSync(){
+  const done=!!S.chanClaimed;$('chBanner').hidden=false;$('chBanner').classList.toggle('done',done);
+  $('chBannerTxt').textContent=done?'Наш канал в Telegram':'Подпишись на канал: +'+fmt(chReward())+' ₸';
+  $('chReward').textContent=done?'Награда уже получена ✓':'+'+fmt(chReward())+' ₸';$('chCheck').hidden=done;
+}
+function openChannel(){try{if(tg)tg.openTelegramLink(CHANNEL_URL);else window.open(CHANNEL_URL,'_blank');}catch(e){window.open(CHANNEL_URL,'_blank');}}
+$('chBanner').onclick=()=>{if(S.chanClaimed){openChannel();return;}$('chErr').textContent='';chSync();$('chModal').hidden=false;};
+$('chOpen').onclick=openChannel;$('chClose').onclick=()=>{$('chModal').hidden=true;};
+$('chCheck').onclick=async()=>{
+  if(S.chanClaimed)return;
+  if(!tg||!tg.initData){$('chErr').textContent='Проверка работает только в игре внутри Telegram.';return;}
+  const b=$('chCheck');b.disabled=true;$('chErr').textContent='Проверяем…';
+  let st='error';
+  try{const r=await fetch(CHANNEL_CHECK,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({initData:tg.initData})});st=(await r.json()).status||'error';}catch(e){}
+  b.disabled=false;
+  if(st==='member'){
+    const v=chReward();S.coins+=v;S.earned+=v;S.chanClaimed=1;save();renderStats();chSync();
+    $('chErr').textContent='';$('chModal').hidden=true;toast('Спасибо за подписку! <b>+'+fmt(v)+' ₸</b>');hap('success');
+    try{const r=$('chBanner').getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,40,true,true);}catch(e){}
+  }else $('chErr').textContent={not_member:'Подписки пока не видно. Подпишись и нажми ещё раз.',bot_not_admin:'Проверка ещё не настроена: автор должен сделать бота админом канала.',
+    bad_signature:'Не удалось подтвердить аккаунт. Перезапусти игру из бота.',no_bot_token:'Сервер ещё не настроен.'}[st]||'Не получилось проверить, попробуй позже.';
+};
+SCREENS.unshift(['chModal',()=>{$('chModal').hidden=true;}]);
+chSync();setInterval(()=>{if(!S.chanClaimed&&$('chModal').hidden)chSync();},5000);
+// один раз за запуск, через 90 с игры, сами предлагаем подписаться (не чаще раза в сутки)
+setTimeout(function invite(){
+  if(S.chanClaimed)return;let last=0;try{last=Number(localStorage.getItem('zt-ch-ask'))||0;}catch(e){}
+  if(Date.now()-last<864e5)return;
+  if(anyOpen()||document.hidden){setTimeout(invite,15000);return;}
+  try{localStorage.setItem('zt-ch-ask',String(Date.now()));}catch(e){}
+  $('chErr').textContent='';chSync();$('chModal').hidden=false;
+},90000);
 
 renderLB();
 cloudLoad().then(()=>pushScore(true));
