@@ -41,6 +41,7 @@ body.lock{overflow:hidden}
 button{font:inherit;color:inherit}
 button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 #fx{position:fixed;inset:0;pointer-events:none;z-index:90}
+body:has(#chatModal:not([hidden])) #fx,body:has(#planet:not([hidden])) #fx{visibility:hidden}
 .pad{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 
 /* ===== HUD: три плавающих блока ===== */
@@ -398,10 +399,15 @@ input[type=range]:focus-visible{outline:2px solid var(--gold);outline-offset:4px
 .pl-label:hover,.pl-label.on{border-color:#5de0ff;color:#fff;box-shadow:0 0 12px #5de0ff66}
 .pl-label.home{border-color:#ffc83d88;color:var(--gold-pale)}
 .pldot{width:34px;height:34px;border-radius:50%;display:block;background:radial-gradient(circle at 35% 30%,#fff 0,var(--pc) 35%,#0b0916 100%);box-shadow:0 0 12px var(--pc)}
+.pl-grip{display:none;width:100%;height:22px;margin:-6px 0 2px;border:0;background:none;cursor:grab;touch-action:none;flex:none}
+.pl-grip i{display:block;width:54px;height:5px;margin:0 auto;border-radius:3px;background:#ffffff55}
+.pl-panel .item{min-height:68px}
 .pl-hint{position:absolute;z-index:2;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));font-size:12px;color:#a9b8d9;pointer-events:none;text-shadow:0 1px 6px #000;max-width:calc(100% - 420px)}
 @media (max-width:820px){
-  .pl-panel{left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));width:auto;max-width:none;top:auto;height:42vh;bottom:calc(12px + env(safe-area-inset-bottom,0px))}
-  .pl-hint{bottom:calc(42vh + 22px);max-width:none;right:16px}
+  .pl-panel{left:max(8px,env(safe-area-inset-left,0px));right:max(8px,env(safe-area-inset-right,0px));width:auto;max-width:none;top:auto;height:var(--plh,58vh);bottom:calc(8px + env(safe-area-inset-bottom,0px));transition:height .25s ease}
+  .pl-panel.dragging{transition:none}
+  .pl-grip{display:block!important}
+  .pl-hint{bottom:calc(var(--plh,58vh) + 22px);max-width:none;right:16px}
   .pl-title b{font-size:19px}
 }
 .bhole{position:fixed;inset:0;z-index:98;pointer-events:none}
@@ -787,6 +793,14 @@ body.lowfx .shop-btn .cart svg{filter:none}
 body.in-land .pl-hint .h1{display:none}body.in-land .pl-hint{color:#1d3a2a;text-shadow:0 1px 0 #fff8}body:not(.in-land) .pl-hint .h2{display:none}
 /* ---- chat ---- */
 .chatcard{max-width:460px!important;text-align:left;gap:10px}
+#chatModal.drawer{place-items:stretch start;padding:0;background:#07040fa8}
+#chatModal.drawer .chatcard{width:min(440px,88vw);max-width:none!important;height:100%;max-height:none;border-radius:0 22px 22px 0;margin:0;padding-top:calc(16px + env(safe-area-inset-top,0px));padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;animation:drawIn .26s cubic-bezier(.2,.9,.3,1);will-change:transform}
+#chatModal.drawer .chatcard #chatList{flex:1;max-height:none!important}
+#chatModal.drawer.closing .chatcard{animation:drawOut .2s ease-in forwards}
+@keyframes drawIn{from{transform:translateX(-100%)}}@keyframes drawOut{to{transform:translateX(-100%)}}
+.chat-edge{position:fixed;left:0;top:46%;z-index:30;width:30px;height:64px;border:1px solid #ffffff22;border-left:0;border-radius:0 16px 16px 0;background:linear-gradient(90deg,#2a2048,#3b2b66);color:#fff;display:grid;place-items:center;cursor:pointer;box-shadow:4px 0 16px #0006;padding:0}
+.chat-edge span:first-child{font-size:16px}
+.chat-edge .n{position:absolute;top:-6px;right:-8px;font-size:10px;font-weight:800;background:#ff4d6d;color:#fff;border-radius:9px;padding:1px 5px}
 .chatcard h3{text-align:center}
 .chatnote{font-size:12.5px!important;text-align:center}
 .chatlist{height:min(52vh,420px);overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:4px 2px;overscroll-behavior:contain}
@@ -973,7 +987,7 @@ body.in-land .pl-hint .h1{display:none}body.in-land .pl-hint{color:#1d3a2a;text-
       <button class="rbtn pfbtn" id="pfBtn" type="button" aria-label="Мой профиль"><img id="pfAva" alt=""></button>
       <button class="rbtn" id="dailyBtn" type="button" aria-label="Ежедневные награды"><i data-icon="calendar"></i><span class="n" id="dailyN" hidden>1</span></button>
       <button class="rbtn" id="lbBtn" type="button" aria-label="Лидерборд"><i data-icon="medal"></i><span class="n" id="myRank" hidden>#1</span></button>
-      <button class="rbtn" id="chatBtn" type="button" aria-label="Чат" hidden><i data-icon="chat"></i><span class="n" id="chatN" hidden>1</span></button>
+      <button class="rbtn" id="chatBtn" type="button" aria-label="Чат" hidden><i data-icon="chat"></i><span class="n" id="chatNx" hidden>1</span></button>
       <button class="rbtn" id="achBtn" type="button" aria-label="Достижения"><i data-icon="trophy"></i><span class="n" id="achN">0</span></button>
       <button class="rbtn" id="admBtn" type="button" aria-label="Админ-панель" hidden><i data-icon="crown"></i></button>
       <button class="rbtn" id="setBtn" type="button" aria-label="Настройки"><i data-icon="cog"></i></button>
@@ -1296,6 +1310,7 @@ body.in-land .pl-hint .h1{display:none}body.in-land .pl-hint{color:#1d3a2a;text-
         <div class="dh"><span>👑</span><div><b>VIP на 30 дней</b><small id="dVipTill">всё сразу</small></div><em>300 ⭐</em></div>
         <ul>
           <li>👆 Удержание монеты, и тапает быстрее</li>
+          <li>🏗 Стройка зданий в 3 раза быстрее</li>
           <li>⚡ Энергия и восстановление +50%</li>
           <li>🔋 +3 бесплатных заряда энергии в день</li>
           <li>🎁 Ежедневный VIP-сундук: прокрутка колеса и 2 бафа</li>
@@ -1337,7 +1352,8 @@ body.in-land .pl-hint .h1{display:none}body.in-land .pl-hint{color:#1d3a2a;text-
     <div class="btns"><button class="ghost" id="profClose" type="button">Закрыть</button></div>
   </div>
 </div>
-<div class="modal" id="chatModal" hidden>
+<button class="chat-edge" id="chatEdge" type="button" aria-label="Чат" hidden><span>💬</span><span class="n" id="chatN" hidden>1</span></button>
+<div class="modal drawer" id="chatModal" hidden>
   <div class="mcard wide chatcard">
     <h3>Чат игроков</h3>
     <p class="chatnote" id="chatNote">Пиши вежливо: мат скрывается, спам блокируется.</p>
@@ -1468,7 +1484,8 @@ body.in-land .pl-hint .h1{display:none}body.in-land .pl-hint{color:#1d3a2a;text-
     <div class="pl-title"><b>Мой город</b><small id="plStage">Лавовый мир</small></div>
     <div class="bal"><span class="cn">₸</span><b id="plBal">0</b></div>
   </div>
-  <aside class="pl-panel">
+  <aside class="pl-panel" id="plPanel">
+    <button class="pl-grip" id="plGrip" type="button" aria-label="Развернуть меню"><i></i></button>
     <div class="seg" id="plSeg"><button type="button" data-pt="city">🏙 Город</button><button type="button" class="on" data-pt="planet">🪐 Планета</button></div>
     <div class="pl-stats"><div><small id="plBonusL">Доход в час</small><b id="plBonus"></b></div><div><small>Метеориты</small><b id="plMet">0 / 100</b></div></div>
     <div class="items" id="plUps"></div>
@@ -1604,24 +1621,26 @@ const SPECIAL=[
   {id:'baiterek',n:'Байтерек',          r:3},
   {id:'pyramid', n:'Золотая пирамида',  r:3},
   {id:'ufo',     n:'База НЛО',          r:4},
-  {id:'obelisk', n:'Обелиск Феникса',   r:4, excl:true},   // только за ребут
+  {id:'obelisk', n:'Обелиск Феникса',   r:4, excl:true, inc:30000},   // только за ребут
 ];
-const SPB=[0,.04,.08,.15,.3];          // бонус к доходу города за 1★ (по редкости)
+const SPB=[0,1500,6000,25000,100000];   // монет в секунду на ур. 1 (по редкости): НЛО — 100К/с
+const spBase=s=>s.inc||SPB[s.r];
 const SP_TIME=[0,600,1800,3600,7200];  // стройка особого здания: 10 мин … 2 ч
 const SP_SLOTS0=8,SP_MAXLV=10;const spSlots=()=>SP_SLOTS0+pk('slot');
-const SP_UPB=[0,2e6,1e7,5e7,2e8],SP_UPG=1.8;            // цена прокачки особого здания (ур.1→2) по редкости
-const SP_SCRAP=[0,3e4,3e5,3e6,1.5e7];                     // сколько дают за разбор (×уровень)
+const SP_UPB=[0,1e7,5e7,2.5e8,1e9],SP_UPG=1.8;            // цена прокачки особого здания (ур.1→2) по редкости
+const SP_SCRAP=[0,1e6,5e6,2e7,8e7];                     // сколько дают за разбор (×уровень)
 const SPK=Object.fromEntries(SPECIAL.map(x=>[x.id,x]));
 const spList0=()=>S.sp||(S.sp=[]);
 const spInst=u=>spList0().find(x=>x.u===u);
 const spKey=x=>'sp:'+x.u;
 const spBusy=x=>!!(S.build&&S.build[spKey(x)]);
-const spLvBonus=(x,lv)=>SPB[SPK[x.id].r]*(1+.5*((lv||x.lvl)-1));
+const spLvBonus=(x,lv)=>spBase(SPK[x.id])*(1+.5*((lv||x.lvl)-1));   // монет/сек
 const spUpPrice=x=>Math.round(SP_UPB[SPK[x.id].r]*Math.pow(SP_UPG,x.lvl-1));
 const spScrapV=x=>SPK[x.id].excl?0:SP_SCRAP[SPK[x.id].r]*x.lvl;
 const spCount=id=>spList0().filter(x=>x.id===id).length;
 function freeSlot(){for(let i=0;i<spSlots();i++)if(!spList0().some(x=>x.slot===i))return i;return null;}
-function spBonus(){let b=0;for(const x of spList0())if(x.slot!=null&&x.built)b+=spLvBonus(x);return b;}
+function spIncome(){let b=0;for(const x of spList0())if(x.slot!=null&&x.built)b+=spLvBonus(x);return b;}
+const spBonus=spIncome;
 function spNew(id){S.spN=(S.spN||0)+1;const x={u:S.spN,id,lvl:1,slot:null,built:false};spList0().push(x);return x;}
 function spMigrate(){spList0();if(S.sb){for(const id in S.sb){const n=S.sb[id];if(!n||!SPK[id])continue;const x=spNew(id);x.lvl=Math.min(SP_MAXLV,n);x.slot=freeSlot();const bd=S.build&&S.build[id];
     if(bd&&x.slot!=null){S.build[spKey(x)]=Object.assign(bd,{kind:'place'});}else x.built=true;if(bd)delete S.build[id];}delete S.sb;}}
@@ -1644,14 +1663,14 @@ const invHeat=id=>{const h=(S.ih||{})[id];if(!h)return 0;return Math.max(0,h.n-M
 const invPrice=it=>Math.round(Math.max(it.min,perHour()*it.k)*Math.pow(1.4,invHeat(it.id)));
 const invCount=()=>INV.reduce((a,x)=>a+((S.inv&&S.inv[x.id])||0),0);
 function startBuild(id,need,kind){S.build=S.build||{};S.build[id]={need,done:0,kind:kind||''};if(!S.buildT)S.buildT=Date.now();}
-function buildLeft(id){const b=S.build&&S.build[id];if(!b)return 0;return Math.max(0,b.need-b.done)/((buffOn('bspeed')?3:1)+evMult('build')-1)/(1+.15*pk('fast'));}
+function buildLeft(id){const b=S.build&&S.build[id];if(!b)return 0;return Math.max(0,b.need-b.done)/((buffOn('bspeed')?3:1)+evMult('build')-1+(isVip()?2:0))/(1+.15*pk('fast'));}
 function buildFrac(id){const b=S.build&&S.build[id];return b?Math.min(1,b.done/b.need):0;}
 function buildTick(){
   const t=Date.now(),from=S.buildT||t;S.buildT=t;if(!S.build)return;
   const dt=Math.max(0,(t-from)/1000);if(!dt)return;
   const boost=Math.max(0,(Math.min(t,(S.buffs&&S.buffs.bspeed)||0)-from)/1000);   // часть времени под ускорителем считается вдвойне
   const ev=(typeof EVENTS!=='undefined'&&EVENTS||[]).find(e=>e.kind==='build'),evo=ev?Math.max(0,(Math.min(t,ev.end)-from)/1000):0;
-  const inc=(dt+2*Math.min(dt,boost)+(ev?(ev.mult-1)*Math.min(dt,evo):0))*(1+.15*pk('fast')),fin=[];     // ускоритель: ×3
+  const inc=(dt+2*Math.min(dt,boost)+(ev?(ev.mult-1)*Math.min(dt,evo):0)+(isVip()?2*dt:0))*(1+.15*pk('fast')),fin=[];   // VIP: стройка ×3     // ускоритель: ×3
   for(const k in S.build){S.build[k].done+=inc;if(S.build[k].done>=S.build[k].need)fin.push(k);}
   for(const k of fin)finishBuild(k);
 }
@@ -1659,7 +1678,7 @@ function finishBuild(k){
   const bd=S.build[k];delete S.build[k];const c=CITY.find(x=>x.id===k);
   if(c){S.city=S.city||{};S.city[k]=(S.city[k]||0)+1;toast('🏗 Достроено: <b>'+c.n+'</b> ур. '+S.city[k]+' · +'+fmt(c.h)+' в час');}
   else if(k.startsWith('sp:')){const x=spInst(+k.slice(3));if(x){if(bd&&bd.kind==='up')x.lvl=Math.min(SP_MAXLV,x.lvl+1);else x.built=true;
-    toast('✨ Готово: <b>'+SPK[x.id].n+'</b> ур. '+x.lvl+' · +'+Math.round(spLvBonus(x)*100)+'% к доходу города');}}
+    toast('✨ Готово: <b>'+SPK[x.id].n+'</b> ур. '+x.lvl+' · +'+fmt(spLvBonus(x))+' ₸/сек');}}
   try{A.reveal(2);}catch(e){}
   if(typeof PG!=='undefined'&&PG&&PG.syncCity)PG.syncCity(k);
   if(typeof planetOn!=='undefined'&&planetOn)renderPlanetUI();
@@ -1910,7 +1929,7 @@ const total=()=>(S.banked||0)+S.earned;
 const pk=id=>(S.rb&&S.rb.perks[id])||0;
 const rbMult=()=>1+.25*((S.rb&&S.rb.count)||0);
 const skinBonus=()=>RAR[SK[S.skin].r].bonus;
-function basePs(){return cityPH()/3600*(1+spBonus());}
+function basePs(){return cityPH()/3600+spIncome();}
 // бафы складываются, а не умножаются: +100% и +200% = +300%
 const buffAdd=k=>(k==='click'?(buffOn('energy')?1:0)+evMult('tap')-1:(buffOn('rain')?1:0)+evMult('income')-1)+(buffOn('frenzy')?2:0)+(buffOn('bx2')?1:0)+(buffOn('wind')?2:0);
 function perSec(){return basePs()*rbMult()*plPs()*(1+.25*pk('vault'))*(1+buffAdd('ps'));}
@@ -2062,7 +2081,9 @@ function init3D(){
   const clock=new THREE.Clock();let et=0,animAcc=0;
   const spr=(k,vk,target,K,D,dt)=>{M[vk]+=(-K*(M[k]-target)-D*M[vk])*dt;M[k]+=M[vk]*dt;};
   function loop(){
-    if(planetOn||COVER){clock.getDelta();requestAnimationFrame(loop);return;}
+    if(planetOn||COVER||document.hidden){clock.getDelta();requestAnimationFrame(loop);return;}
+    {const now=performance.now(),busy=now-(M.act||0)<1500||M.flash>.01||Math.abs(M.vsp)>.05||Math.abs(M.spT-M.sp)>.05||bossOn||minis.some(p=>p.life>0);
+     if(!busy&&now-(loop.lr||0)<1000/FPS_IDLE()){requestAnimationFrame(loop);return;}loop.lr=now;}
     const dt=Math.min(.05,clock.getDelta());et+=dt;
     const idleX=reduceM?0:Math.sin(et*.7)*.12,idleY=reduceM?0:Math.sin(et*.5)*.28;
     for(let s=0;s<2;s++){const h=dt/2;spr('rx','vrx',idleX+M.hy*.35,120,10,h);spr('ry','vry',idleY+M.hx*.45,120,10,h);spr('z','vz',0,160,12,h);spr('sp','vsp',M.spT,28,8,h);}
@@ -2098,8 +2119,9 @@ document.fonts&&document.fonts.ready.then(()=>{for(const k in previewCache)delet
 
 /* ================= CLICK ================= */
 let autoCount=0;
+const FPS_IDLE=()=>SET.quality==='low'?20:30;   // в покое рисуем реже — меньше нагрузка и нагрев телефона
 function hit(pt,client,auto){
-  const t=performance.now();
+  const t=performance.now();M.act=t;
   if(!auto){const e=energyNow(),c=tapCost();if(e<c){noEnergy();return;}setEnergy(e-c);}
   if(!auto){const gap=t-lastClick;lastClick=t;combo=Math.min(1,combo+(gap<350?.06:.02));}
   if(buffOn('adren'))combo=1;
@@ -2191,8 +2213,9 @@ requestAnimationFrame(tick);
 let disp=S.coins,lastBump=0;
 function renderEnergy(){const e=energyNow(),m=enMax();const t=Math.floor(e)+' / '+m;if(renderEnergy.t!==t){renderEnergy.t=t;$('enTxt').textContent=t;$('enFill').style.width=(e/m*100).toFixed(1)+'%';$('enBox').classList.toggle('low',e<tapCost());}
   const l=enFreeLeft();if(renderEnergy.l!==l){renderEnergy.l=l;$('enLeft').textContent=l;$('enBoost').disabled=!l;}}
-function hudLoop(){
-  renderEnergy();
+function hudLoop(ts){
+  if(document.hidden||(ts-(hudLoop.lt||0)<33&&Math.abs(S.coins-disp)<1)){requestAnimationFrame(hudLoop);return;}hudLoop.lt=ts;
+  if(ts-(hudLoop.et||0)>200){hudLoop.et=ts;renderEnergy();}
   disp+=(S.coins-disp)*.18;if(Math.abs(S.coins-disp)<1)disp=S.coins;
   const ft=fmt(disp);if(ft!==hudLoop.last){hudLoop.last=ft;$('balance').textContent=ft;$('shopBal').textContent=ft;}
   if(bumpT>lastBump){lastBump=bumpT;const b=$('balBox');b.classList.remove('bump');void b.offsetWidth;b.classList.add('bump');}
@@ -2423,6 +2446,23 @@ function reveal(c,win){
   renderStats();checkAch();save();
 }
 
+
+/* шторка чата: свайп от левого края открывает, свайп влево закрывает */
+(function(){let sx=0,sy=0,tr=false,mode='';
+  const anyOpen=()=>[...document.querySelectorAll('.modal')].some(m=>!m.hidden)||!$('shop').hidden||!$('settings').hidden||(typeof planetOn!=='undefined'&&planetOn);
+  addEventListener('touchstart',e=>{const t=e.touches[0];sx=t.clientX;sy=t.clientY;mode='';
+    if($('chatEdge').hidden)return;if(!$('chatModal').hidden)mode='close';else if(sx<26&&!anyOpen())mode='open';},{passive:true});
+  addEventListener('touchmove',e=>{if(!mode)return;const t=e.touches[0],dx=t.clientX-sx,dy=t.clientY-sy;if(Math.abs(dy)>50){mode='';return;}
+    if(mode==='open'&&dx>55){mode='';$('chatEdge').click();}else if(mode==='close'&&dx<-70){mode='';window.closeChatDrawer&&window.closeChatDrawer();}},{passive:true});
+  $('chatModal').addEventListener('click',e=>{if(e.target===$('chatModal')&&window.closeChatDrawer)window.closeChatDrawer();});})();
+
+/* меню планеты: ручку можно тянуть, тап — развернуть/свернуть */
+(function(){const P=$('plPanel'),g=$('plGrip');if(!P||!g)return;let y0=0,h0=0,moved=false;
+  const setH=v=>{const vh=innerHeight;v=Math.max(vh*.28,Math.min(vh*.9,v));$('planet').style.setProperty('--plh',v+'px');try{localStorage.setItem('zt-plh',String(v/vh));}catch(e){}};
+  try{const k=Number(localStorage.getItem('zt-plh'));if(k>.2&&k<.95)$('planet').style.setProperty('--plh',(k*100)+'vh');}catch(e){}
+  g.addEventListener('pointerdown',e=>{y0=e.clientY;h0=P.getBoundingClientRect().height;moved=false;P.classList.add('dragging');g.setPointerCapture(e.pointerId);});
+  g.addEventListener('pointermove',e=>{if(!P.classList.contains('dragging'))return;const d=y0-e.clientY;if(Math.abs(d)>6)moved=true;if(moved)setH(h0+d);});
+  g.addEventListener('pointerup',()=>{P.classList.remove('dragging');if(!moved){const h=P.getBoundingClientRect().height;setH(h<innerHeight*.7?innerHeight*.86:innerHeight*.58);}});})();
 /* ================= ДОНАТ ЗА ЗВЁЗДЫ: удержание монеты и VIP ================= */
 var STARS_API=STARS_API||{status:async()=>null,invoice:async()=>({status:'need_tg'}),admin:async()=>({status:'forbidden'})};
 var ENT=Object.assign({hold:false,vipUntil:0},S.ent||{});
@@ -2766,9 +2806,10 @@ function bgBoom(x,y,k){if(!reduceM)booms.push({x,y,r:0,life:1,k:k||1});}
 addEventListener('pointerdown',e=>{if(!btn.contains(e.target))bgBoom(e.clientX,e.clientY,.8);});
 function bez(t,a,b,c,d){const u=1-t;return {x:u*u*u*a.x+3*u*u*t*b.x+3*u*t*t*c.x+t*t*t*d.x,y:u*u*u*a.y+3*u*u*t*b.y+3*u*t*t*c.y+t*t*t*d.y};}
 function bgLoop(){
-  if(!SET.bgflow||planetOn||COVER){if(!bgLoop.cleared){bx.setTransform(1,0,0,1,0,0);bx.clearRect(0,0,bg.width,bg.height);bgLoop.cleared=1;}requestAnimationFrame(bgLoop);return;}bgLoop.cleared=0;
+  if(!SET.bgflow||planetOn||COVER||document.hidden){if(!bgLoop.cleared){bx.setTransform(1,0,0,1,0,0);bx.clearRect(0,0,bg.width,bg.height);bgLoop.cleared=1;}requestAnimationFrame(bgLoop);return;}bgLoop.cleared=0;
+  {const now=performance.now(),busy=booms.length||combo>.05||buffOn('frenzy');if(now-(bgLoop.lr||0)<1000/(busy?60:FPS_IDLE()-5)){requestAnimationFrame(bgLoop);return;}bgLoop.lr=now;}
   let tx=BW/2,ty=BH/2;
-  if($('shop').hidden){const r=zone.getBoundingClientRect();tx=Math.min(BW,Math.max(0,r.left+r.width/2));ty=Math.min(BH*1.1,Math.max(-BH*.1,r.top+r.height/2));}
+  if($('shop').hidden){const now=performance.now();if(!bgLoop.zr||now-bgLoop.zt>500){bgLoop.zr=zone.getBoundingClientRect();bgLoop.zt=now;}const r=bgLoop.zr;tx=Math.min(BW,Math.max(0,r.left+r.width/2));ty=Math.min(BH*1.1,Math.max(-BH*.1,r.top+r.height/2));}
   bcx+=(tx-bcx)*.08;bcy+=(ty-bcy)*.08;
   if(Math.abs(bcx-(bgLoop.gx||0))>2||Math.abs(bcy-(bgLoop.gy||0))>2){bgLoop.gx=bcx;bgLoop.gy=bcy;const gl=$('bgglow');gl.style.setProperty('--cx',bcx+'px');gl.style.setProperty('--cy',bcy+'px');}
   bx.setTransform(bdpr,0,0,bdpr,0,0);bx.clearRect(0,0,BW,BH);
@@ -3014,7 +3055,8 @@ function renderChat(){
 }
 function openChat(){$('chatErr').textContent='';$('chatModal').hidden=false;$('chatList').dataset.first='';$('chatList').dataset.sig='';renderChat();chatCall({action:'list'});clearInterval(chatTimer);chatTimer=setInterval(()=>{if(!$('chatModal').hidden&&!document.hidden)chatCall({action:'list'});},4000);}
 function closeChat(){$('chatModal').hidden=true;clearInterval(chatTimer);renderChat();}
-$('chatBtn').hidden=false;$('chatBtn').onclick=openChat;$('chatClose').onclick=closeChat;
+$('chatEdge').hidden=false;$('chatEdge').onclick=openChat;$('chatClose').onclick=()=>window.closeChatDrawer();
+window.closeChatDrawer=()=>{const md=$('chatModal');if(md.hidden||md.classList.contains('closing'))return;md.classList.add('closing');setTimeout(()=>{md.classList.remove('closing');closeChat();},190);};
 $('chatForm').addEventListener('submit',async e=>{
   e.preventDefault();const inp=$('chatInput'),txt=inp.value.trim();if(!txt)return;
   if(!tg||!tg.initData){$('chatErr').textContent='Писать в чат можно только из игры в Telegram.';return;}
@@ -3220,7 +3262,7 @@ const MARKET_URL='https://ktkcathaqbvrmpetbrgv.supabase.co/functions/v1/market';
 const MK={open:[],mine:[],toMe:[],to:null,filter:-1,type:'coins',pick:null,busy:false,state:'off',status:'',owner:false,poll:0};
 S.mkDone=S.mkDone||{};
 /* предметы площадки: скин (id) или здание из кейса (b-<id>-<уровень>) */
-const BMINP=[0,5e6,3e7,1.5e8,6e8];
+const BMINP=[0,1.5e7,6e7,3e8,1.2e9];
 const isB=k=>typeof k==='string'&&/^b-[a-z]+-\d{1,2}$/.test(k)&&!!SPK[k.split('-')[1]];
 const bP=k=>{const a=k.split('-');return {id:a[1],lvl:Math.max(1,Math.min(SP_MAXLV,+a[2]||1))};};
 const okItem=k=>isB(k)||(typeof k==='string'&&!!SK[k]);
@@ -4386,7 +4428,7 @@ function plFloat(x,y,txt){if(!SET.floaters)return;const el=document.createElemen
 let plTab='planet';
 function setPlTab(t){plTab=t;document.querySelectorAll('#plSeg button').forEach(x=>x.classList.toggle('on',x.dataset.pt===t));}
 document.querySelectorAll('#plSeg button').forEach(b=>b.onclick=()=>{plTab=b.dataset.pt;document.querySelectorAll('#plSeg button').forEach(x=>x.classList.toggle('on',x===b));A.ui();renderPlanetUI();if(PG){if(plTab==='city')PG.enterLand();else PG.exitLand();}});
-function showSlot(i){A.ui();const x=spList0().find(q=>q.slot===i);cityView='inv';renderPlanetUI();if(!x){toast('Свободное место — поставь сюда здание из инвентаря');return;}const s=SPK[x.id];if(spBusy(x)){toast('🔨 <b>'+s.n+'</b>: ещё '+fmtT(buildLeft(spKey(x))));return;}toast('✨ <b>'+s.n+'</b> ур. '+x.lvl+' · +'+Math.round(spLvBonus(x)*100)+'% к доходу города');}
+function showSlot(i){A.ui();const x=spList0().find(q=>q.slot===i);cityView='inv';renderPlanetUI();if(!x){toast('Свободное место — поставь сюда здание из инвентаря');return;}const s=SPK[x.id];if(spBusy(x)){toast('🔨 <b>'+s.n+'</b>: ещё '+fmtT(buildLeft(spKey(x))));return;}toast('✨ <b>'+s.n+'</b> ур. '+x.lvl+' · +'+fmt(spLvBonus(x))+' ₸/сек');}
 function showCard(id){if(plTab!=='city')return;if(cityView!=='build'){cityView='build';renderPlanetUI();}const el=document.querySelector('#plUps .item[data-b="'+id+'"]');if(!el)return;el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');A.ui();}
 function cityItem(b){
   const l=cLv(b.id),mx=l>=CITY_MAX,lock=cLocked(b),pr=cPrice(b);
@@ -4416,12 +4458,12 @@ function citySeg(){const d=document.createElement('div');d.className='seg cseg';
 function spCard(x){const s=SPK[x.id],el=document.createElement('div');el.className='spc inst';el.style.setProperty('--rc',RAR[s.r].c);const busy=spBusy(x),k=spKey(x);
   let st,act='';
   if(busy)st='<span class="sp-b" data-bt="'+k+'">🔨 '+fmtT(buildLeft(k))+'</span>';
-  else if(x.slot!=null)st='на газоне<br><b>+'+Math.round(spLvBonus(x)*100)+'%</b>';
+  else if(x.slot!=null)st='на газоне<br><b>+'+fmt(spLvBonus(x))+'/с</b>';
   else st='<span class="sp-q">в инвентаре</span>';
   const ex=!!SPK[x.id].excl;
   if(!busy&&x.slot!=null){if(x.lvl<SP_MAXLV&&!ex)act+=`<button type="button" class="chipbtn gold${S.coins<spUpPrice(x)?' no':''}" data-a="up">⬆ Улучшить · ${fmt(spUpPrice(x))} ₸</button>`;act+='<button type="button" class="chipbtn" data-a="rm">Убрать</button>';}
   if(!busy&&x.slot==null)act+=`<button type="button" class="chipbtn gold" data-a="pl">Поставить</button>`+(ex?'':`<button type="button" class="chipbtn danger2" data-a="sc">Разобрать · +${fmt(spScrapV(x))} ₸</button>`);
-  el.innerHTML=`<div class="spi">${ICON('sp_'+x.id)}</div><div class="spn"><b>${s.n} <span class="splv">ур. ${x.lvl}</span></b><small style="color:${RAR[s.r].c}">${RAR[s.r].n} · сейчас +${Math.round(spLvBonus(x)*100)}%${x.lvl<SP_MAXLV?' → +'+Math.round(spLvBonus(x,x.lvl+1)*100)+'%':''}</small></div><div class="sps">${st}</div>${act?`<div class="spa">${act}</div>`:''}`;
+  el.innerHTML=`<div class="spi">${ICON('sp_'+x.id)}</div><div class="spn"><b>${s.n} <span class="splv">ур. ${x.lvl}</span></b><small style="color:${RAR[s.r].c}">${RAR[s.r].n} · сейчас +${fmt(spLvBonus(x))} ₸/сек${x.lvl<SP_MAXLV&&!s.excl?' → +'+fmt(spLvBonus(x,x.lvl+1)):''}</small></div><div class="sps">${st}</div>${act?`<div class="spa">${act}</div>`:''}`;
   el.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>spAct(x.u,b.dataset.a,b));return el;}
 function spRefresh(){if(typeof PG!=='undefined'&&PG&&PG.syncCity)PG.syncCity('sp');if(planetOn)renderPlanetUI();if(!$('shop').hidden&&stab==='inv')renderShop();renderStats();save();}
 function spAct(u,a,btn){const x=spInst(u);if(!x)return;const s=SPK[x.id];
@@ -4435,15 +4477,15 @@ function spAct(u,a,btn){const x=spInst(u);if(!x)return;const s=SPK[x.id];
   spRefresh();}
 function spOwned(box){const list=spList0().slice().sort((a,b)=>(a.slot==null)-(b.slot==null)||SPK[b.id].r-SPK[a.id].r||b.lvl-a.lvl);
   const used=list.filter(x=>x.slot!=null).length;
-  const h=document.createElement('div');h.className='alabel';h.style.margin='12px 2px 0';h.innerHTML='Мои здания из кейсов · на газоне '+used+'/'+spSlots()+(spBonus()?' · <span class="spbon">+'+Math.round(spBonus()*100)+'% к доходу</span>':'');box.appendChild(h);
+  const h=document.createElement('div');h.className='alabel';h.style.margin='12px 2px 0';h.innerHTML='Мои здания из кейсов · на газоне '+used+'/'+spSlots()+(spIncome()?' · <span class="spbon">+'+fmt(spIncome())+' ₸/сек</span>':'');box.appendChild(h);
   if(!list.length){const n=document.createElement('div');n.className='inv-note';n.innerHTML='Пока пусто. Здания выпадают из кейсов в <b>Городе → Магазин</b>.';box.appendChild(n);return;}
   const g=document.createElement('div');g.className='splist';for(const x of list)g.appendChild(spCard(x));box.appendChild(g);
-  const nt=document.createElement('div');nt.className='inv-note';nt.textContent='Одинаковых зданий может быть несколько, и каждое можно ставить на газон. Каждое прокачивается отдельно до '+SP_MAXLV+' уровня: +50% от бонуса за уровень. Прокачка тоже строится.';box.appendChild(nt);}
+  const nt=document.createElement('div');nt.className='inv-note';nt.textContent='Особые здания приносят монеты каждую секунду. Одинаковых может быть несколько, и каждое можно ставить на газон. Каждое прокачивается до '+SP_MAXLV+' уровня: +50% дохода за уровень. Прокачка тоже строится.';box.appendChild(nt);}
 function spList(box){
   const h=document.createElement('div');h.className='alabel';h.style.margin='12px 2px 0';h.textContent='Что может выпасть';box.appendChild(h);
   const g=document.createElement('div');g.className='splist';
   for(const s of SPECIAL){const n=spCount(s.id),el=document.createElement('div');el.className='spc'+(n?'':' off')+(s.excl?' excl':'');el.style.setProperty('--rc',RAR[s.r].c);
-    el.innerHTML=`<div class="spi">${ICON('sp_'+s.id)}</div><div class="spn"><b>${n?s.n:'???'}</b><small style="color:${RAR[s.r].c}">${s.excl?'Только за ребут · растёт с каждым ребутом':RAR[s.r].n+' · +'+Math.round(SPB[s.r]*100)+'% на ур. 1'}</small></div><div class="sps">${n?'есть: '+n:'<span class="sp-q">нет</span>'}</div>`;g.appendChild(el);}
+    el.innerHTML=`<div class="spi">${ICON('sp_'+s.id)}</div><div class="spn"><b>${n?s.n:'???'}</b><small style="color:${RAR[s.r].c}">${s.excl?'Только за ребут · растёт с каждым ребутом':RAR[s.r].n+' · +'+fmt(spBase(s))+' ₸/сек на ур. 1'}</small></div><div class="sps">${n?'есть: '+n:'<span class="sp-q">нет</span>'}</div>`;g.appendChild(el);}
   box.appendChild(g);
 }
 function renderCityShop(box){
@@ -4495,7 +4537,7 @@ function revealB(c,win){
   let txt='';const col=BRAR(win.r).c;
   if(win.kind==='item'){S.inv=S.inv||{};S.inv[win.it.id]=(S.inv[win.it.id]||0)+1;txt='15 минут: '+win.it.d+'. Лежит в инвентаре';}
   else{const s=win.s,x=spNew(s.id),sl=freeSlot(),n=spCount(s.id);
-    if(sl!=null){x.slot=sl;startBuild(spKey(x),SP_TIME[s.r],'place');txt='Поставлено на газон! Стройка '+fmtLen(SP_TIME[s.r]/(buffOn('bspeed')?3:1))+', потом +'+Math.round(spLvBonus(x)*100)+'% к доходу города';}
+    if(sl!=null){x.slot=sl;startBuild(spKey(x),SP_TIME[s.r],'place');txt='Поставлено на газон! Стройка '+fmtLen(SP_TIME[s.r]/(buffOn('bspeed')?3:1))+', потом +'+fmt(spLvBonus(x))+' ₸/сек';}
     else txt='Все места на газоне заняты — здание лежит в инвентаре. Убери другое, чтобы поставить';
     if(n>1)txt+='. Таких у тебя: '+n;
     if(PG&&PG.syncCity)PG.syncCity('sp');}
@@ -4529,7 +4571,7 @@ function renderPlanetUI(light){
     if(cityView==='shop'){renderCityShop(box);return;}
     if(cityView==='inv'){renderInv(box);return;}
     const sb=spBonus(),nb=Object.keys(S.build||{}).length;
-    const t=document.createElement('div');t.className='city-total';t.innerHTML=`<b>${fmt(cityPH())}</b>в час от зданий${sb?' · <span class="spbon">+'+Math.round(sb*100)+'% от особых</span>':''}.${nb?' Строится: '+nb+'.':''} Стройка занимает время — чем дороже, тем дольше.${buffOn('bspeed')?' <span class="spbon">⚡ стройка ×3</span>':''}`;box.appendChild(t);
+    const t=document.createElement('div');t.className='city-total';t.innerHTML=`<b>${fmt(cityPH())}</b>в час от зданий${sb?' · <span class="spbon">+'+fmt(sb*3600)+'/ч от особых</span>':''}.${nb?' Строится: '+nb+'.':''} Стройка занимает время — чем дороже, тем дольше.${buffOn('bspeed')?' <span class="spbon">⚡ стройка ×3</span>':''}`;box.appendChild(t);
     for(const b of CITY)box.appendChild(cityItem(b));return;}
   if(light){for(const b of document.querySelectorAll('#plUps .item[data-pt]')){const t=PLANET_TYPES.find(x=>x.id===b.dataset.pt),own=!!p.owned[t.id];b.classList.toggle('can',!own&&S.coins>=t.price);b.classList.toggle('no',!own&&S.coins<t.price);}
     for(const b of document.querySelectorAll('#plUps .item[data-id]')){const u=PUP.find(x=>x.id===b.dataset.id),l=p[u.id]||0,mx=l>=u.max;b.classList.toggle('can',!mx&&S.coins>=u.cost(l));b.classList.toggle('no',!mx&&S.coins<u.cost(l));}return;}
