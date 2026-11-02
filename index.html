@@ -804,6 +804,20 @@ body.in-land .pl-hint .h1{display:none}body.in-land .pl-hint{color:#1d3a2a;text-
 .evchip{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;font-size:13px;font-weight:800;background:linear-gradient(90deg,#ff5d8f,#b06bff,#5de0ff);background-size:200% 100%;animation:evflow 4s linear infinite;color:#fff;box-shadow:0 0 18px #b06bff66;text-shadow:0 1px 2px #0008}
 .evchip i{font-style:normal;font-family:var(--f-mono,monospace);background:#0006;border-radius:8px;padding:1px 6px}
 @keyframes evflow{to{background-position:200% 0}}
+.donc{max-width:520px;text-align:left;gap:10px}
+.donlist{display:grid;gap:12px}
+.dcard{padding:14px;border-radius:18px;background:linear-gradient(160deg,#1f1838,#120c22);border:1px solid #ffffff1a;display:grid;gap:10px}
+.dcard.vip{border:2px solid #ffd56b;background:linear-gradient(160deg,#3a2a08,#1a1206 60%,#120c22);box-shadow:0 0 30px #ffc83d33}
+.dh{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
+.dh>span{font-size:30px}.dh b{font:400 18px var(--f-display)}.dh small{display:block;color:var(--muted);font-size:12px}
+.dh em{font-style:normal;font-weight:800;color:#ffd56b;background:#ffd56b1a;border:1px solid #ffd56b66;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.dcard p{font-size:13px;color:#d9d3ef;margin:0}.dcard ul{margin:0;padding-left:4px;list-style:none;display:grid;gap:5px;font-size:13px}
+.dcard .owned{background:#3ddc8422!important;color:#3ddc84!important;border:1px solid #3ddc84!important}
+.vipb{display:inline-block;font:400 10px var(--f-display);color:#140c26;background:linear-gradient(90deg,#ffe08a,#ffb02e);border-radius:6px;padding:1px 5px;margin-left:4px;vertical-align:2px;letter-spacing:.5px}
+.vipnick{color:#ffd56b!important;text-shadow:0 0 10px #ffb02e88}
+.pfbtn.vip::after{content:'👑';position:absolute;top:-10px;right:-6px;font-size:16px;filter:drop-shadow(0 1px 2px #000)}
+.pf-b.vipbg{background:linear-gradient(90deg,#ffe08a,#ffb02e);color:#140c26}
+.pf-menu button.vipt{border-color:#ffd56b;background:linear-gradient(180deg,#3a2a08,#1a1206)}
 .privtag{font-size:11px;font-weight:800;color:#5de0ff;padding:2px 8px;border-radius:999px;background:#5de0ff1a;margin:2px auto}
 .lb2.dec{background:transparent!important;color:var(--muted)!important;border:1px solid #ffffff22!important;margin-top:6px}
 .rb-gifts{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:10px 0 4px;font-size:12px}
@@ -1144,6 +1158,14 @@ body.in-land .pl-hint .h1{display:none}body.in-land .pl-hint{color:#1d3a2a;text-
         <div class="arow"><button class="chipbtn danger2" id="aZero" type="button">Баланс в 0</button><button class="chipbtn danger2" id="aZeroCr" type="button">Кристаллы в 0</button></div>
       </div>
       <div class="set-card">
+        <h2><span>⭐</span>Донат звёздами</h2>
+        <p class="note">Один раз нажми «Подключить оплату»: бот начнёт принимать звёзды и отвечать на /start и /paysupport. Если у бота уже есть другой вебхук, он будет заменён.</p>
+        <div class="arow"><button class="primary" id="dSetup" type="button">Подключить оплату к боту</button><button class="ghost" id="dStats" type="button">Статистика</button></div>
+        <div class="srow"><div class="lab"><b>VIP для теста</b><small>Только у тебя, без оплаты</small></div><button class="sw" id="dTestVip" type="button" aria-pressed="false"><i></i></button></div>
+        <p class="err" id="dAdmErr"></p>
+        <div id="dAdmOut" class="note"></div>
+      </div>
+      <div class="set-card">
         <h2><span>🎉</span>Ивент для всех</h2>
         <p class="note">Включается сразу у всех игроков и показывается над монетой с таймером.</p>
         <div class="pgrid">
@@ -1256,6 +1278,35 @@ body.in-land .pl-hint .h1{display:none}body.in-land .pl-hint{color:#1d3a2a;text-
     <button class="ghost" id="myProfBtn" type="button" style="width:100%">👤 Мой профиль · нажми на игрока, чтобы открыть его профиль</button>
     <ol class="lb full" id="lbFull"></ol>
     <div class="btns"><button class="ghost" id="lbClose" type="button">Закрыть</button></div>
+  </div>
+</div>
+<div class="modal" id="donModal" hidden>
+  <div class="mcard wide donc">
+    <h3>⭐ VIP и донат</h3>
+    <p class="note" id="donNote">Оплата звёздами Telegram. Покупка привязана к твоему аккаунту.</p>
+    <div class="donlist">
+      <div class="dcard" id="dHold">
+        <div class="dh"><span>👆</span><div><b>Удержание монеты</b><small>навсегда</small></div><em>250 ⭐</em></div>
+        <p>Зажми монету — она тапает сама, пока есть энергия. Палец больше не устанет!</p>
+        <button class="primary" type="button" data-buy="hold">Купить за 250 ⭐</button>
+      </div>
+      <div class="dcard vip" id="dVip">
+        <div class="dh"><span>👑</span><div><b>VIP на 30 дней</b><small id="dVipTill">всё сразу</small></div><em>300 ⭐</em></div>
+        <ul>
+          <li>👆 Удержание монеты, и тапает быстрее</li>
+          <li>⚡ Энергия и восстановление +50%</li>
+          <li>🔋 +3 бесплатных заряда энергии в день</li>
+          <li>🎁 Ежедневный VIP-сундук: прокрутка колеса и 2 бафа</li>
+          <li>🌙 Оффлайн-заработок на 2 часа дольше</li>
+          <li>🏪 0% комиссии на торговой площадке</li>
+          <li>👑 Значок VIP и золотой ник в чате, рейтинге и профиле</li>
+        </ul>
+        <button class="primary" type="button" data-buy="vip30">Купить VIP за 300 ⭐</button>
+        <button class="ghost" type="button" id="dChest" hidden>🎁 Забрать VIP-сундук</button>
+      </div>
+    </div>
+    <p class="err" id="donErr"></p>
+    <div class="btns"><button class="ghost" id="donClose" type="button">Закрыть</button></div>
   </div>
 </div>
 <div class="modal" id="wheelModal" hidden>
@@ -1871,13 +1922,13 @@ const clickValue=()=>rawClick()*comboMult()*(1+buffAdd('click'))+perSec()*tapPas
 const critChance=()=>(buffOn('clover')||(S.adm&&S.adm.crit))?1:Math.min(1,lv('crit')*.02+pk('luck2')*.03+plCrit()+(RAR[SK[S.skin]?SK[S.skin].r:0].crit||0));
 const CRIT_X=3;const critX=()=>RAR[SK[S.skin]?SK[S.skin].r:0].critX||CRIT_X;
 /* --- энергия, как в Hamster Kombat --- */
-const enMax=()=>1000+500*lv('enmax');
-const enRegen=()=>3+lv('enreg');
+const enMax=()=>Math.round((1000+500*lv('enmax'))*(isVip()?1.5:1));
+const enRegen=()=>(3+lv('enreg'))*(isVip()?1.5:1);
 const tapCost=()=>Math.max(1,Math.round((1+Math.floor(lv('tap')/2))*(1-(RAR[SK[S.skin]?SK[S.skin].r:0].enCut||0))));
 function energyNow(){const m=enMax();if(S.en==null){S.en=m;S.enT=Date.now();}return Math.min(m,S.en+Math.max(0,Date.now()-(S.enT||Date.now()))/1000*enRegen());}
 function setEnergy(v){S.en=Math.max(0,Math.min(enMax(),v));S.enT=Date.now();}
 const EN_FREE=3;
-function enFreeLeft(){const d=new Date().toDateString();if(!S.enFree||S.enFree.d!==d)S.enFree={d,n:EN_FREE};return S.enFree.n;}
+function enFreeLeft(){const d=new Date().toDateString();if(!S.enFree||S.enFree.d!==d)S.enFree={d,n:EN_FREE+(isVip()?3:0)};return S.enFree.n;}
 const buffHeat=id=>{const h=(S.bb||{})[id];if(!h)return 0;return Math.max(0,h.n-Math.floor((Date.now()-h.t)/180000));};
 const buffPrice=b=>Math.round((b.base+rawClick()*b.kc+basePs()*b.kp)*Math.pow(1.3,buffHeat(b.id)));
 
@@ -2071,6 +2122,14 @@ function hit(pt,client,auto){
 }
 function noEnergy(){A.deny();const b=$('enBox');if(b){b.classList.remove('empty');void b.offsetWidth;b.classList.add('empty');}if(Date.now()-(noEnergy.t||0)>2500){noEnergy.t=Date.now();toast('⚡ Энергия кончилась — подожди или нажми «Заряд»');}}
 function flatPoint(cx,cy){const r=btn.getBoundingClientRect();const lx=((cx-r.left)/r.width*2-1)/.7,ly=-((cy-r.top)/r.height*2-1)/.7;return Math.hypot(lx,ly)<=1.05?{lx,ly}:null;}
+// удержание монеты (донат или VIP): зажал — монета тапает сама, тратя энергию как обычные тапы
+let holdT=0,holdIv=0,holdPos=null,holdHint=false;
+function holdStop(){clearTimeout(holdT);clearInterval(holdIv);holdT=holdIv=0;}
+btn.addEventListener('pointerdown',e=>{holdStop();holdPos={x:e.clientX,y:e.clientY};
+  holdT=setTimeout(()=>{if(!holdPos)return;if(!hasHold()){if(!holdHint){holdHint=true;toast('👆 Удержание монеты — в <b>⭐ магазине</b> (профиль → VIP и донат)');}return;}
+    holdIv=setInterval(()=>{if(!holdPos)return holdStop();const p=three?three.pick(holdPos.x,holdPos.y):flatPoint(holdPos.x,holdPos.y);if(p)hit(p,{x:holdPos.x+(Math.random()-.5)*30,y:holdPos.y+(Math.random()-.5)*30});},isVip()?140:170);},350);});
+['pointerup','pointercancel','pointerleave'].forEach(ev=>btn.addEventListener(ev,()=>{holdPos=null;holdStop();}));
+btn.addEventListener('pointermove',e=>{if(holdPos){holdPos.x=e.clientX;holdPos.y=e.clientY;}});
 btn.addEventListener('pointerdown',e=>{e.preventDefault();const pt=three?three.pick(e.clientX,e.clientY):flatPoint(e.clientX,e.clientY);if(pt)hit(pt,{x:e.clientX,y:e.clientY});});
 btn.addEventListener('pointermove',e=>{const r=btn.getBoundingClientRect();M.hx=((e.clientX-r.left)/r.width-.5)*2;M.hy=((e.clientY-r.top)/r.height-.5)*2;});
 btn.addEventListener('pointerleave',()=>{M.hx=0;M.hy=0;});
@@ -2359,6 +2418,35 @@ function reveal(c,win){
   renderStats();checkAch();save();
 }
 
+/* ================= ДОНАТ ЗА ЗВЁЗДЫ: удержание монеты и VIP ================= */
+var STARS_API=STARS_API||{status:async()=>null,invoice:async()=>({status:'need_tg'}),admin:async()=>({status:'forbidden'})};
+var ENT=Object.assign({hold:false,vipUntil:0},S.ent||{});
+function isVip(){return (ENT&&ENT.vipUntil>Date.now())||!!(S.adm&&S.adm.vip);}
+function hasHold(){return !!(ENT&&ENT.hold)||isVip();}
+function syncVip(){const v=isVip();try{$('pfBtn').classList.toggle('vip',v);}catch(e){}if(!$('donModal').hidden)renderDon();}
+async function loadEnt(){const d=await STARS_API.status().catch(()=>null);if(d&&d.status==='ok'){const was=isVip();ENT.hold=!!d.hold;ENT.vipUntil=Number(d.vipUntil)||0;S.ent={hold:ENT.hold,vipUntil:ENT.vipUntil};save();syncVip();if(!was&&isVip())vipChestToast();}}
+const vipChestReady=()=>isVip()&&S.vipDay!==new Date().toDateString();
+function vipChestToast(){if(vipChestReady())toast('👑 VIP-сундук ждёт тебя: профиль → <b>VIP и донат</b>');}
+function claimVipChest(){if(!vipChestReady())return;S.vipDay=new Date().toDateString();S.rb.spins=(S.rb.spins||0)+1;S.inv=S.inv||{};const g=[];for(let i=0;i<2;i++){const it=rndOf(INV);S.inv[it.id]=(S.inv[it.id]||0)+1;g.push(it.n);}
+  A.reveal(3);const r=$('dChest').getBoundingClientRect();burst(r.left+r.width/2,r.top,60,true,true,'#ffd56b');toast('🎁 VIP-сундук: прокрутка колеса, '+g.join(', '));save();renderDon();}
+function renderDon(){const v=isVip(),tg_=typeof tg!=='undefined'&&tg&&tg.initData;
+  $('donNote').textContent=tg_?'Оплата звёздами Telegram. Покупка привязана к твоему аккаунту и сохранится на любом телефоне.':'Оплата звёздами работает в игре внутри Telegram.';
+  const hb=$('dHold').querySelector('[data-buy]');if(ENT.hold){hb.textContent='✓ Куплено';hb.className='primary owned';hb.disabled=true;}else if(v){hb.textContent='✓ Уже есть в VIP';hb.className='primary owned';hb.disabled=true;}else{hb.textContent='Купить за 250 ⭐';hb.className='primary';hb.disabled=false;}
+  $('dVipTill').textContent=v?(ENT.vipUntil>Date.now()?'активен до '+new Date(ENT.vipUntil).toLocaleDateString('ru-RU'):'тестовый (админ)'):'всё сразу';
+  $('dVip').querySelector('[data-buy]').textContent=v?'Продлить на 30 дней · 300 ⭐':'Купить VIP за 300 ⭐';
+  const ch=$('dChest');ch.hidden=!v;ch.disabled=!vipChestReady();ch.textContent=vipChestReady()?'🎁 Забрать VIP-сундук':'🎁 Сундук уже забран — приходи завтра';}
+function openDon(){$('donErr').textContent='';renderDon();$('donModal').hidden=false;loadEnt();}
+$('donClose').onclick=()=>{$('donModal').hidden=true;};
+$('dChest').onclick=claimVipChest;
+document.querySelectorAll('#donModal [data-buy]').forEach(b=>b.onclick=async()=>{const prod=b.dataset.buy;$('donErr').textContent='';
+  if(typeof tg==='undefined'||!tg||!tg.initData||!tg.openInvoice){$('donErr').textContent='Оплата звёздами работает только в игре внутри Telegram.';return;}
+  b.disabled=true;const d=await STARS_API.invoice(prod).catch(()=>null);b.disabled=false;
+  if(!d||d.status!=='ok'||!d.link){$('donErr').textContent=d&&d.status==='owned'?'Уже куплено.':'Не удалось создать счёт. Попробуй позже.';if(d&&d.status==='owned')loadEnt();return;}
+  tg.openInvoice(d.link,st=>{if(st==='paid'){toast('⭐ Спасибо за поддержку! Активируем покупку…');A.reveal(4);let n=0;const iv=setInterval(async()=>{await loadEnt();if(++n>=6||(prod==='hold'?ENT.hold:isVip())){clearInterval(iv);renderDon();if(prod==='hold'?hasHold():isVip())toast(prod==='hold'?'👆 Удержание монеты включено!':'👑 VIP активен!');}},2000);}
+    else if(st==='failed')$('donErr').textContent='Оплата не прошла.';});});
+setTimeout(()=>{syncVip();loadEnt();setTimeout(vipChestToast,4000);},1500);
+// админ: подключение оплаты к боту и статистика
+async function donAdmin(action){const d=await STARS_API.admin(action).catch(()=>null);return d;}
 /* ================= ИВЕНТЫ ДЛЯ ВСЕХ ================= */
 var EVENT_API=EVENT_API||{list:async()=>[],start:async()=>({status:'offline'}),stop:async()=>({status:'offline'})};
 const EVK={build:{n:'Стройка',ic:'🏗'},income:{n:'Доход',ic:'💰'},tap:{n:'Тапы',ic:'👆'},luck:{n:'Удача в кейсах',ic:'🍀'}};
@@ -2378,6 +2466,12 @@ function renderEvAdmin(){const box=$('eList');box.innerHTML='';const now=Date.no
   for(const e of act){const d=document.createElement('div');d.className='prow';d.innerHTML='<div><b></b><small></small></div><button class="chipbtn danger2" type="button">Остановить</button>';
     d.querySelector('b').textContent=EVK[e.kind].ic+' '+EVK[e.kind].n+' ×'+e.mult;d.querySelector('small').textContent=(e.title?e.title+' · ':'')+'ещё '+fmtT((e.end-now)/1000);
     d.querySelector('button').onclick=async()=>{const r=await EVENT_API.stop(e.kind).catch(()=>null);if(r&&r.events)setEvents(r.events);toast('Ивент остановлен');};box.appendChild(d);}}
+
+$('dSetup').onclick=async()=>{$('dAdmErr').textContent='';const d=await donAdmin('setup');$('dAdmOut').textContent=d&&d.status==='ok'?'✅ Оплата подключена. Бот принимает звёзды.':'Ошибка: '+((d&&(d.error||d.status))||'нет связи');};
+$('dStats').onclick=async()=>{const d=await donAdmin('stats');if(!d||d.status!=='ok'){$('dAdmOut').textContent='Нет данных: '+((d&&d.status)||'нет связи');return;}
+  const by={};let tot=0;for(const r of d.rows||[]){if(r.refunded)continue;by[r.product]=(by[r.product]||0)+1;tot+=Number(r.stars)||0;}
+  $('dAdmOut').textContent='Всего: '+tot+' ⭐ · удержание: '+(by.hold||0)+' · VIP: '+(by.vip30||0)+' (последние 200 покупок)';};
+$('dTestVip').onclick=()=>{S.adm=S.adm||{};S.adm.vip=!S.adm.vip;$('dTestVip').setAttribute('aria-pressed',String(!!S.adm.vip));$('dTestVip').classList.toggle('on',!!S.adm.vip);syncVip();save();toast(S.adm.vip?'Тестовый VIP включён':'Тестовый VIP выключен');};
 $('eStart').onclick=async()=>{$('eErr').textContent='';const h=Number(String($('eHours').value).replace(',','.'))||0;if(!(h>=.25&&h<=72)){$('eErr').textContent='Укажи от 0,25 до 72 часов.';return;}
   const r=await EVENT_API.start({kind:$('eKind').value,mult:Number($('eMult').value),hours:h,title:$('eTitle').value.trim()}).catch(()=>null);
   if(!r||r.status!=='ok'){$('eErr').textContent=r&&r.status==='forbidden'?'Нет прав.':'Не получилось запустить. Проверь связь.';return;}
@@ -2501,8 +2595,9 @@ function renderProfile(){
   const sk=SK[p.skin]?p.skin:'classic',rr=SK[sk].r;
   const hd=document.createElement('div');hd.className='pf-head';hd.style.setProperty('--rc',RAR[rr].c);
   hd.innerHTML=`<div class="pf-ava${ringCls(p.rb)}"><img src="${preview(sk)}" alt=""></div><div class="pf-who"><div class="pf-nick"></div><div class="pf-badges"></div></div>`;
-  hd.querySelector('.pf-nick').textContent=cleanNick(p.nick)||'Игрок';
+  hd.querySelector('.pf-nick').textContent=cleanNick(p.nick)||'Игрок';if(p.self?isVip():p.vip)hd.querySelector('.pf-nick').classList.add('vipnick');
   const bd=hd.querySelector('.pf-badges');const badge=(t,c)=>{const s=document.createElement('span');s.className='pf-b'+(c?' '+c:'');s.textContent=t;bd.appendChild(s);};
+  if(p.self?isVip():p.vip)badge('👑 VIP','vipbg');
   if(p.owner)badge('👑 Создатель игры','gold');badge('ур. '+(Number(p.level)||1));if(Number(p.rb))badge('♻ '+p.rb+' ребут');{const rg=ringOf(p.rb);if(rg){badge('💍 '+rg.n+' оправа','rgb');}}if(sk==='veteran')badge('🎖 Ветеран','vet');
   badge(SK[sk].n,'');bd.lastChild.style.color=RAR[rr].c;
   if(PROF_API.like||p.self){const lk=document.createElement('button');lk.type='button';lk.className='pf-like'+(p.liked?' on':'');lk.innerHTML='❤ <b>'+(Number(p.likes)||0)+'</b>';
@@ -2536,10 +2631,10 @@ function renderProfile(){
       const go=fn=>()=>{$('profModal').hidden=true;fn();};
       const shopTab=t=>{['lbModal','chatModal'].forEach(id=>{const e=$(id);if(e)e.hidden=true;});if(typeof openShop==='function')openShop();else $('shop').hidden=false;stab=t;renderShop();};
       const mn=document.createElement('div');mn.className='pf-menu';const ni=invCount(),nt=(typeof MK!=='undefined'&&MK.toMe)?MK.toMe.length:0,ns=S.rb.spins||0;
-      const items=[['✏️','Настроить',()=>{profEdit=true;renderProfile();}],['🎒','Инвентарь'+(ni?'<em>'+ni+'</em>':''),go(()=>shopTab('inv'))],['🤝','Лоты и трейды'+(nt?'<em>'+nt+'</em>':''),go(()=>shopTab('market'))],
+      const items=[['⭐','VIP и донат'+(vipChestReady()?'<em>🎁</em>':''),go(()=>openDon()),'vipt'],['✏️','Настроить',()=>{profEdit=true;renderProfile();}],['🎒','Инвентарь'+(ni?'<em>'+ni+'</em>':''),go(()=>shopTab('inv'))],['🤝','Лоты и трейды'+(nt?'<em>'+nt+'</em>':''),go(()=>shopTab('market'))],
         ['🎟','Промокод',go(()=>{if(typeof openSet==='function')openSet();else $('settings').hidden=false;setTimeout(()=>{try{$('promoIn').focus();}catch(e){}},450);})],['🏆','Рейтинг',go(()=>{if(typeof openLB==='function')openLB();else $('lbModal').hidden=false;})],
         ['🎡','Колесо удачи'+(ns?'<em>'+ns+'</em>':''),go(()=>openWheel())]];
-      for(const [ic,t,fn] of items){const bt=document.createElement('button');bt.type='button';bt.innerHTML='<span>'+ic+'</span>'+t;bt.onclick=()=>{A.ui();fn();};mn.appendChild(bt);}
+      for(const [ic,t,fn,cl] of items){const bt=document.createElement('button');bt.type='button';if(cl)bt.className=cl;bt.innerHTML='<span>'+ic+'</span>'+t;bt.onclick=()=>{A.ui();fn();};mn.appendChild(bt);}
       const mh=document.createElement('div');mh.className='alabel';mh.textContent='Меню профиля';b.insertBefore(mh,b.children[1]);b.insertBefore(mn,mh.nextSibling);}
     else{const f=document.createElement('div');f.className='pf-form';
       f.innerHTML=`<div class="alabel">Ник</div><input class="ainp" id="pfNick" maxlength="16" autocomplete="off" placeholder="2–16 символов" style="width:100%;box-sizing:border-box"><p class="err" id="pfNickErr"></p><div class="alabel">Описание профиля</div><textarea id="pfBio" maxlength="160" rows="3" placeholder="Например: коплю на Базу НЛО, меняю скины 🙂"></textarea><small class="pf-cnt" id="pfCnt"></small>
@@ -2614,7 +2709,7 @@ $('confirmReset').onclick=()=>{const nk=S.nick,cl=S.claimed,ns=S.newsSeen,md=S.m
 
 
 /* ================= OFFLINE EARNINGS ================= */
-const OFF_RATE=.25, OFF_MAX_H0=3;const OFF_MAX_H_=()=>OFF_MAX_H0+pk('offh');   // пока игрок не в игре: 25% от дохода в секунду, максимум 3 часа
+const OFF_RATE=.25, OFF_MAX_H0=3;const OFF_MAX_H_=()=>OFF_MAX_H0+pk('offh')+(isVip()?2:0);   // пока игрок не в игре: 25% от дохода в секунду, максимум 3 часа
 let offlineDone=false;
 function fmtDur(sec){sec=Math.floor(sec);const h=Math.floor(sec/3600),m=Math.floor(sec%3600/60);return h?h+' ч '+m+' мин':m?m+' мин':sec+' с';}
 function offlineCheck(fromTs){
@@ -2735,6 +2830,7 @@ function hap(kind){
 /* --- back button closes whatever screen is open --- */
 const SCREENS=[
   ['profModal',()=>{$('profModal').hidden=true;}],
+  ['donModal',()=>{$('donModal').hidden=true;}],
   ['dailyModal',()=>{$('dailyModal').hidden=true;}],['lbModal',()=>{$('lbModal').hidden=true;}],['achModal',()=>{$('achModal').hidden=true;}],
   ['rbModal',()=>{$('rbModal').hidden=true;}],['modal',()=>{$('modal').hidden=true;}],
   ['admin',()=>closeAdm()],['planet',()=>closePlanet()],['token',()=>closeToken()],['rebirth',()=>closeRb()],['settings',()=>closeSet()],['shop',()=>closeShop()],
@@ -2808,13 +2904,16 @@ function lbRowEl(r,rank){
   const rk=document.createElement('span');rk.className='rk';rk.textContent=rank?(rank<=3?['🥇','🥈','🥉'][rank-1]:rank):'—';
   const img=document.createElement('img');img.src=preview(sk);img.alt='';img.className='lbav'+ringCls(r.rb);
   const who=document.createElement('div');who.className='who';
-  const nk=document.createElement('div');nk.className='nk';nk.textContent=cleanNick(r.nick)||'Игрок';
+  const nk=document.createElement('div');nk.className='nk'+(r.vip?' vipnick':'');nk.textContent=cleanNick(r.nick)||'Игрок';if(r.vip){const vb=document.createElement('span');vb.className='vipb';vb.textContent='VIP';nk.appendChild(vb);}
   const meta=document.createElement('div');meta.className='meta';meta.textContent=(Number(r.rb)?'♻'+Number(r.rb)+' · ':'')+'ур. '+(Number(r.level)||1)+' · '+SK[sk].n;
   who.append(nk,meta);
   const sc=document.createElement('span');sc.className='sc';sc.textContent=fmt(Number(r.earned)||0)+' ₸';
   li.append(rk,img,who,sc);li.onclick=()=>openProfile(r.me?'me':r.pid);return li;
 }
 let myPid='';
+const STARS_URL='https://ktkcathaqbvrmpetbrgv.supabase.co/functions/v1/stars';
+async function starsCall(b){const r=await fetch(STARS_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign({initData:tg&&tg.initData||''},b))});return await r.json();}
+STARS_API={status:()=>tg&&tg.initData?starsCall({action:'status'}):Promise.resolve(null),invoice:p=>starsCall({action:'invoice',product:p}),admin:a=>starsCall({action:a})};
 const EVENTS_URL='https://ktkcathaqbvrmpetbrgv.supabase.co/functions/v1/events';
 async function evCall(b){const r=await fetch(EVENTS_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign({initData:tg&&tg.initData||''},b))});return await r.json();}
 EVENT_API={list:async()=>{const d=await evCall({action:'list'});return d.events||[];},start:b=>evCall(Object.assign({action:'start'},b)),stop:k=>evCall({action:'stop',kind:k})};
@@ -2890,7 +2989,7 @@ function renderChat(){
     for(const m of chatMsgs){
       const el=document.createElement('div');el.className='cmsg'+(m.me?' me':'')+(m.owner?' own':'');
       const h=document.createElement('div');h.className='ch';
-      const n=document.createElement('span');n.className='cn';n.textContent=(m.owner?'👑 ':'')+(m.nick||'Игрок');
+      const n=document.createElement('span');n.className='cn'+(m.vip?' vipnick':'');n.textContent=(m.owner?'👑 ':'')+(m.nick||'Игрок');if(m.vip){const vb=document.createElement('span');vb.className='vipb';vb.textContent='VIP';n.appendChild(vb);}
       const t=document.createElement('span');t.className='ct';t.textContent=chatTime(m.at);
       const av=document.createElement('img');av.className='cav'+ringCls(m.rb);av.alt='';av.src=preview(SK[m.skin]?m.skin:'classic');
       const op=()=>openProfile(m.me?'me':m.pid);av.onclick=op;n.onclick=op;
@@ -3156,7 +3255,7 @@ async function settleMine(list){
     if(!l.id)continue;
     if(S.mkDone[l.id]){ack.push(l.id);continue;}
     if(l.status==='sold'){
-      if(l.priceType==='coins'){const got=Math.floor(l.price*(1-FEE));S.coins+=got;toast('Твой лот «'+(okItem(l.skin)?itN(l.skin):'')+'» купил '+(l.buyerNick||'игрок')+': <b>+'+fmt(got)+' ₸</b>');}
+      if(l.priceType==='coins'){const got=Math.floor(l.price*(1-(typeof feeNow==='function'?feeNow():FEE)));S.coins+=got;toast('Твой лот «'+(okItem(l.skin)?itN(l.skin):'')+'» купил '+(l.buyerNick||'игрок')+': <b>+'+fmt(got)+' ₸</b>');}
       else if(okSkin(l.wantSkin)){S.skins[l.wantSkin]=1;toast('Обмен состоялся: ты получил <b>'+SK[l.wantSkin].n+'</b>');}
       A.reveal(2);burst(innerWidth/2,innerHeight/3,40,true,true);
     }else if(l.status==='declined'){
