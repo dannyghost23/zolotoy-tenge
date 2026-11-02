@@ -818,6 +818,8 @@ body.in-land .pl-hint .h1{display:none}body.in-land .pl-hint{color:#1d3a2a;text-
 .pfbtn.vip::after{content:'👑';position:absolute;top:-10px;right:-6px;font-size:16px;filter:drop-shadow(0 1px 2px #000)}
 .pf-b.vipbg{background:linear-gradient(90deg,#ffe08a,#ffb02e);color:#140c26}
 .pf-menu button.vipt{border-color:#ffd56b;background:linear-gradient(180deg,#3a2a08,#1a1206)}
+.holditem{border-color:#ffd56b88!important;background:linear-gradient(90deg,#3a2a08,#1a1206 70%)!important}
+.holditem .hic{font-size:26px}.holditem .pr{color:#ffd56b}
 .privtag{font-size:11px;font-weight:800;color:#5de0ff;padding:2px 8px;border-radius:999px;background:#5de0ff1a;margin:2px auto}
 .lb2.dec{background:transparent!important;color:var(--muted)!important;border:1px solid #ffffff22!important;margin-top:6px}
 .rb-gifts{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:10px 0 4px;font-size:12px}
@@ -1286,9 +1288,9 @@ body.in-land .pl-hint .h1{display:none}body.in-land .pl-hint{color:#1d3a2a;text-
     <p class="note" id="donNote">Оплата звёздами Telegram. Покупка привязана к твоему аккаунту.</p>
     <div class="donlist">
       <div class="dcard" id="dHold">
-        <div class="dh"><span>👆</span><div><b>Удержание монеты</b><small>навсегда</small></div><em>250 ⭐</em></div>
+        <div class="dh"><span>👆</span><div><b>Удержание монеты</b><small>навсегда</small></div><em>150 ⭐</em></div>
         <p>Зажми монету — она тапает сама, пока есть энергия. Палец больше не устанет!</p>
-        <button class="primary" type="button" data-buy="hold">Купить за 250 ⭐</button>
+        <button class="primary" type="button" data-buy="hold">Купить за 150 ⭐</button>
       </div>
       <div class="dcard vip" id="dVip">
         <div class="dh"><span>👑</span><div><b>VIP на 30 дней</b><small id="dVipTill">всё сразу</small></div><em>300 ⭐</em></div>
@@ -2126,7 +2128,7 @@ function flatPoint(cx,cy){const r=btn.getBoundingClientRect();const lx=((cx-r.le
 let holdT=0,holdIv=0,holdPos=null,holdHint=false;
 function holdStop(){clearTimeout(holdT);clearInterval(holdIv);holdT=holdIv=0;}
 btn.addEventListener('pointerdown',e=>{holdStop();holdPos={x:e.clientX,y:e.clientY};
-  holdT=setTimeout(()=>{if(!holdPos)return;if(!hasHold()){if(!holdHint){holdHint=true;toast('👆 Удержание монеты — в <b>⭐ магазине</b> (профиль → VIP и донат)');}return;}
+  holdT=setTimeout(()=>{if(!holdPos)return;if(!hasHold()){if(!holdHint){holdHint=true;toast('👆 Удержание монеты — во вкладке <b>Клики</b> за 150 ⭐ или в VIP');}return;}
     holdIv=setInterval(()=>{if(!holdPos)return holdStop();const p=three?three.pick(holdPos.x,holdPos.y):flatPoint(holdPos.x,holdPos.y);if(p)hit(p,{x:holdPos.x+(Math.random()-.5)*30,y:holdPos.y+(Math.random()-.5)*30});},isVip()?140:170);},350);});
 ['pointerup','pointercancel','pointerleave'].forEach(ev=>btn.addEventListener(ev,()=>{holdPos=null;holdStop();}));
 btn.addEventListener('pointermove',e=>{if(holdPos){holdPos.x=e.clientX;holdPos.y=e.clientY;}});
@@ -2237,6 +2239,9 @@ function renderPanel(){
     c.innerHTML=`<div class="cc-ic">🏙</div><div class="cc-tx"><b>Город на планете</b><span>Пассивный доход теперь дают здания: юрты, кофейни, банки, заводы… Строй их на своей планете.</span><div class="cc-ph">Доход: <b id="ccPH">${fmt(perHour())}</b> в час</div></div>`;
     const go=document.createElement('button');go.type='button';go.className='primary';go.textContent='Открыть город';go.onclick=()=>{try{openPlanet();}catch(e){}};c.appendChild(go);box.appendChild(c);
   }else{
+    if(ptab==='click'){const own=hasHold(),h=document.createElement('button');h.type='button';h.className='item holditem'+(own?' max':'');
+      h.innerHTML=itemHTML('<span class="hic">👆</span>','Удержание монеты',own?'есть':'⭐ донат','Зажми монету — она тапает сама, пока есть энергия. Навсегда.',own?'✓ Куплено':'150 ⭐',own?'':'звёздами Telegram');
+      h.onclick=()=>{if(own){toast('Удержание уже работает — просто зажми монету 👆');return;}A.ui();buyStars('hold',h);};box.appendChild(h);}
     for(const u of UP.filter(u=>u.tab===ptab)){const l=lv(u.id),max=u.max&&l>=u.max;const b=document.createElement('button');b.type='button';b.className='item';b.dataset.kind='up';b.dataset.id=u.id;
       b.innerHTML=itemHTML(u.svg?UPSVG[u.svg]:ICON(u.id),u.n,'ур. '+l+(u.max?'/'+u.max:''),u.d(l),max?'МАКС':fmt(cost(u)),max?'':'+'+Math.round((u.g-1)*100)+'% за ур.');b.onclick=()=>buyUp(u,b);box.appendChild(b);}
   }
@@ -2431,19 +2436,20 @@ function claimVipChest(){if(!vipChestReady())return;S.vipDay=new Date().toDateSt
   A.reveal(3);const r=$('dChest').getBoundingClientRect();burst(r.left+r.width/2,r.top,60,true,true,'#ffd56b');toast('🎁 VIP-сундук: прокрутка колеса, '+g.join(', '));save();renderDon();}
 function renderDon(){const v=isVip(),tg_=typeof tg!=='undefined'&&tg&&tg.initData;
   $('donNote').textContent=tg_?'Оплата звёздами Telegram. Покупка привязана к твоему аккаунту и сохранится на любом телефоне.':'Оплата звёздами работает в игре внутри Telegram.';
-  const hb=$('dHold').querySelector('[data-buy]');if(ENT.hold){hb.textContent='✓ Куплено';hb.className='primary owned';hb.disabled=true;}else if(v){hb.textContent='✓ Уже есть в VIP';hb.className='primary owned';hb.disabled=true;}else{hb.textContent='Купить за 250 ⭐';hb.className='primary';hb.disabled=false;}
+  const hb=$('dHold').querySelector('[data-buy]');if(ENT.hold){hb.textContent='✓ Куплено';hb.className='primary owned';hb.disabled=true;}else if(v){hb.textContent='✓ Уже есть в VIP';hb.className='primary owned';hb.disabled=true;}else{hb.textContent='Купить за 150 ⭐';hb.className='primary';hb.disabled=false;}
   $('dVipTill').textContent=v?(ENT.vipUntil>Date.now()?'активен до '+new Date(ENT.vipUntil).toLocaleDateString('ru-RU'):'тестовый (админ)'):'всё сразу';
   $('dVip').querySelector('[data-buy]').textContent=v?'Продлить на 30 дней · 300 ⭐':'Купить VIP за 300 ⭐';
   const ch=$('dChest');ch.hidden=!v;ch.disabled=!vipChestReady();ch.textContent=vipChestReady()?'🎁 Забрать VIP-сундук':'🎁 Сундук уже забран — приходи завтра';}
 function openDon(){$('donErr').textContent='';renderDon();$('donModal').hidden=false;loadEnt();}
 $('donClose').onclick=()=>{$('donModal').hidden=true;};
 $('dChest').onclick=claimVipChest;
-document.querySelectorAll('#donModal [data-buy]').forEach(b=>b.onclick=async()=>{const prod=b.dataset.buy;$('donErr').textContent='';
-  if(typeof tg==='undefined'||!tg||!tg.initData||!tg.openInvoice){$('donErr').textContent='Оплата звёздами работает только в игре внутри Telegram.';return;}
-  b.disabled=true;const d=await STARS_API.invoice(prod).catch(()=>null);b.disabled=false;
-  if(!d||d.status!=='ok'||!d.link){$('donErr').textContent=d&&d.status==='owned'?'Уже куплено.':'Не удалось создать счёт. Попробуй позже.';if(d&&d.status==='owned')loadEnt();return;}
-  tg.openInvoice(d.link,st=>{if(st==='paid'){toast('⭐ Спасибо за поддержку! Активируем покупку…');A.reveal(4);let n=0;const iv=setInterval(async()=>{await loadEnt();if(++n>=6||(prod==='hold'?ENT.hold:isVip())){clearInterval(iv);renderDon();if(prod==='hold'?hasHold():isVip())toast(prod==='hold'?'👆 Удержание монеты включено!':'👑 VIP активен!');}},2000);}
-    else if(st==='failed')$('donErr').textContent='Оплата не прошла.';});});
+async function buyStars(prod,b,errFn){errFn=errFn||(m=>toast(m));
+  if(typeof tg==='undefined'||!tg||!tg.initData||!tg.openInvoice){errFn('Оплата звёздами работает только в игре внутри Telegram.');return;}
+  if(b)b.disabled=true;const d=await STARS_API.invoice(prod).catch(()=>null);if(b)b.disabled=false;
+  if(!d||d.status!=='ok'||!d.link){errFn(d&&d.status==='owned'?'Уже куплено.':'Не удалось создать счёт. Попробуй позже.');if(d&&d.status==='owned')loadEnt();return;}
+  tg.openInvoice(d.link,st=>{if(st==='paid'){toast('⭐ Спасибо за поддержку! Активируем покупку…');A.reveal(4);let n=0;const iv=setInterval(async()=>{await loadEnt();if(++n>=6||(prod==='hold'?ENT.hold:isVip())){clearInterval(iv);if(!$('donModal').hidden)renderDon();renderPanel();if(prod==='hold'?hasHold():isVip())toast(prod==='hold'?'👆 Удержание монеты включено!':'👑 VIP активен!');}},2000);}
+    else if(st==='failed')errFn('Оплата не прошла.');});}
+document.querySelectorAll('#donModal [data-buy]').forEach(b=>b.onclick=()=>{$('donErr').textContent='';buyStars(b.dataset.buy,b,m=>{$('donErr').textContent=m;});});
 setTimeout(()=>{syncVip();loadEnt();setTimeout(vipChestToast,4000);},1500);
 // админ: подключение оплаты к боту и статистика
 async function donAdmin(action){const d=await STARS_API.admin(action).catch(()=>null);return d;}
