@@ -790,6 +790,16 @@ body.in-land .pl-hint .h1{display:none}body.in-land .pl-hint{color:#1d3a2a;text-
 .chatcard h3{text-align:center}
 .chatnote{font-size:12.5px!important;text-align:center}
 .chatlist{height:min(52vh,420px);overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:4px 2px;overscroll-behavior:contain}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.pgrid label{display:grid;gap:4px;font-size:11px;font-weight:700;color:var(--muted)}
+.pgrid .ainp,.pgrid .asel{width:100%;min-width:0}
+.prow{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:8px 10px;border-radius:12px;background:#ffffff0a;margin-top:6px}
+.prow b{font-family:var(--f-mono,monospace);letter-spacing:1px;color:#ffd56b}.prow small{display:block;color:var(--muted);font-size:11px}
+.prow.off{opacity:.5}
+.promo-card{border-color:#ffd56b66!important;background:linear-gradient(135deg,#2a2210,transparent)}
+.promo-ok{display:grid;gap:6px;justify-items:center;text-align:center}
+.promo-ok b{font:400 26px var(--f-display);color:#ffd56b}
+.promo-ok span{color:#3ddc84;font-weight:700}
 .privtag{font-size:11px;font-weight:800;color:#5de0ff;padding:2px 8px;border-radius:999px;background:#5de0ff1a;margin:2px auto}
 .lb2.dec{background:transparent!important;color:var(--muted)!important;border:1px solid #ffffff22!important;margin-top:6px}
 .rb-gifts{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:10px 0 4px;font-size:12px}
@@ -837,7 +847,7 @@ body.in-land .pl-hint .h1{display:none}body.in-land .pl-hint{color:#1d3a2a;text-
 .wres{display:grid;gap:2px;text-align:center;padding:8px 14px;border-radius:14px;background:color-mix(in srgb,var(--rc) 22%,#140c26);border:1px solid var(--rc);animation:rev .6s cubic-bezier(.3,1.6,.5,1)}
 .wres b{font:400 20px var(--f-display);color:var(--rc)}.wres span{font-size:13px}
 .spc.excl{border-style:dashed}
-.pf-b.ring{background:#ffffff14;color:#fff}
+.pf-b.rgb{background:linear-gradient(90deg,#ffd56b33,#ffffff14);color:#ffe9a8}
 .rg0{box-shadow:0 0 0 2px #cd7f32,0 0 8px #cd7f32aa}.rg1{box-shadow:0 0 0 2px #dfe6f0,0 0 8px #dfe6f0aa}.rg2{box-shadow:0 0 0 2px #ffd23a,0 0 10px #ffd23a}
 .rg3{box-shadow:0 0 0 2px #9ff0ff,0 0 12px #9ff0ff}.rg4{animation:rgb 3s linear infinite}
 @keyframes rgb{0%{box-shadow:0 0 0 2px #ff4d6d,0 0 12px #ff4d6d}33%{box-shadow:0 0 0 2px #3ddc84,0 0 12px #3ddc84}66%{box-shadow:0 0 0 2px #5de0ff,0 0 12px #5de0ff}100%{box-shadow:0 0 0 2px #ff4d6d,0 0 12px #ff4d6d}}
@@ -874,6 +884,11 @@ body.in-land .pl-hint .h1{display:none}body.in-land .pl-hint{color:#1d3a2a;text-
 .pf-hidden{display:grid;justify-items:center;gap:4px;padding:22px 10px;border-radius:16px;background:#ffffff08;font-size:30px}
 .pf-hidden b{font-size:16px}.pf-hidden span{font-size:12px;color:var(--muted)}
 .pf-edit{width:100%}
+.pfbtn{padding:0;overflow:visible}.pfbtn img{width:100%;height:100%;border-radius:50%;display:block}
+.pf-menu{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pf-menu button{display:grid;justify-items:center;gap:4px;padding:10px 4px;border-radius:14px;border:1px solid #ffffff1a;background:linear-gradient(180deg,#221a3e,#140e26);color:var(--text);font:700 12px/1.2 inherit;font-family:inherit;cursor:pointer;position:relative}
+.pf-menu button span{font-size:22px}.pf-menu button:active{transform:scale(.96)}
+.pf-menu button em{position:absolute;top:4px;right:6px;font-style:normal;font-size:10px;font-weight:800;background:#ff4d6d;color:#fff;border-radius:8px;padding:0 5px}
 .pf-form textarea{width:100%;box-sizing:border-box;background:#0d0918;border:1px solid var(--line);border-radius:12px;color:var(--text);padding:10px;font:14px/1.4 inherit;font-family:inherit;resize:vertical}
 .pf-cnt{display:block;text-align:right;font-size:11px;color:var(--muted)}
 .pf-tog{display:flex;gap:10px;align-items:center;font-size:13px;margin:8px 0;cursor:pointer}
@@ -934,6 +949,7 @@ body.in-land .pl-hint .h1{display:none}body.in-land .pl-hint{color:#1d3a2a;text-
       </div>
     </div>
     <div class="hud-r glass">
+      <button class="rbtn pfbtn" id="pfBtn" type="button" aria-label="Мой профиль"><img id="pfAva" alt=""></button>
       <button class="rbtn" id="dailyBtn" type="button" aria-label="Ежедневные награды"><i data-icon="calendar"></i><span class="n" id="dailyN" hidden>1</span></button>
       <button class="rbtn" id="lbBtn" type="button" aria-label="Лидерборд"><i data-icon="medal"></i><span class="n" id="myRank" hidden>#1</span></button>
       <button class="rbtn" id="chatBtn" type="button" aria-label="Чат" hidden><i data-icon="chat"></i><span class="n" id="chatN" hidden>1</span></button>
@@ -1060,6 +1076,12 @@ body.in-land .pl-hint .h1{display:none}body.in-land .pl-hint{color:#1d3a2a;text-
       <div class="eqviz" id="eqViz"><i></i><i></i><i></i><i></i></div>
     </div>
     <div class="set-grid">
+      <div class="set-card promo-card">
+        <h2><span>🎟</span>Промокод</h2>
+        <p class="note">Коды публикуются в нашем Telegram-канале. Каждый код можно активировать один раз.</p>
+        <form class="arow" id="promoForm"><input class="ainp" id="promoIn" maxlength="24" autocomplete="off" autocapitalize="characters" placeholder="Например TENGE2026" aria-label="Промокод"><button class="primary" type="submit" id="promoGo">Активировать</button></form>
+        <p class="err" id="promoErr"></p>
+      </div>
       <div class="set-card">
         <h2><span>🔊</span>Звук</h2>
         <div class="vol">
@@ -1114,6 +1136,25 @@ body.in-land .pl-hint .h1{display:none}body.in-land .pl-hint{color:#1d3a2a;text-
         <div class="arow"><input class="ainp" id="aLvl" inputmode="numeric" placeholder="Например 2000" aria-label="Поставить уровень"><button class="ghost" id="aLvlGo" type="button">Поставить</button></div>
         <div class="alabel">Обнулить</div>
         <div class="arow"><button class="chipbtn danger2" id="aZero" type="button">Баланс в 0</button><button class="chipbtn danger2" id="aZeroCr" type="button">Кристаллы в 0</button></div>
+      </div>
+      <div class="set-card">
+        <h2><span>🎟</span>Промокоды</h2>
+        <p class="note" id="pNote">Игрок вводит код в Настройках. Один раз на игрока.</p>
+        <div class="arow"><input class="ainp" id="pCode" maxlength="24" placeholder="Код, например TENGE2026" aria-label="Код"></div>
+        <div class="pgrid">
+          <label>Монеты<input class="ainp" id="pCoins" inputmode="numeric" placeholder="0"></label>
+          <label>Кристаллы<input class="ainp" id="pCrys" inputmode="numeric" placeholder="0"></label>
+          <label>Прокрутки колеса<input class="ainp" id="pSpins" inputmode="numeric" placeholder="0"></label>
+          <label>⚡ Ускорители<input class="ainp" id="pSpeed" inputmode="numeric" placeholder="0"></label>
+          <label>🍀 Удача<input class="ainp" id="pLuck" inputmode="numeric" placeholder="0"></label>
+          <label>💰 Деньги ×2<input class="ainp" id="pX2" inputmode="numeric" placeholder="0"></label>
+          <label>Здание<select class="asel" id="pSpecial"><option value="">— нет —</option></select></label>
+          <label>Активаций (0 — без лимита)<input class="ainp" id="pMax" inputmode="numeric" placeholder="100"></label>
+          <label>Действует дней (0 — всегда)<input class="ainp" id="pDays" inputmode="numeric" placeholder="7"></label>
+        </div>
+        <button class="primary" id="pCreate" type="button">Создать промокод</button>
+        <p class="err" id="pErr"></p>
+        <div id="pList"></div>
       </div>
       <div class="set-card">
         <h2><span>⚡</span>Читы и тесты</h2>
@@ -2286,6 +2327,42 @@ function reveal(c,win){
   renderStats();checkAch();save();
 }
 
+/* ================= ПРОМОКОДЫ ================= */
+var PROMO_API=PROMO_API||{redeem:async()=>({status:'offline'}),admin:async()=>({status:'offline'})};
+const normCode=s=>String(s||'').toUpperCase().replace(/[^A-Z0-9_-]/g,'').slice(0,24);
+const clampN=(v,mx)=>{const n=Math.floor(Number(v));return Number.isFinite(n)?Math.max(0,Math.min(mx,n)):0;};
+function rewardText(r){r=r||{};const o=[];if(r.coins)o.push('+'+fmt(r.coins)+' ₸');if(r.crystals)o.push('+'+r.crystals+' 💎');if(r.spins)o.push('+'+r.spins+' 🎡');
+  const it=r.items||{};if(it.bspeed)o.push(it.bspeed+'× ускоритель');if(it.bluck)o.push(it.bluck+'× удача');if(it.bx2)o.push(it.bx2+'× деньги ×2');if(r.special&&SPK[r.special])o.push('🏛 '+SPK[r.special].n);return o.join(' · ');}
+function grantReward(r){r=r||{};const c=clampN(r.coins,1e15);if(c){S.coins+=c;S.earned+=c;}
+  const cr=clampN(r.crystals,100);if(cr)S.rb.crystals+=cr;const sp=clampN(r.spins,20);if(sp)S.rb.spins=(S.rb.spins||0)+sp;
+  const it=r.items||{};S.inv=S.inv||{};for(const k of ['bspeed','bluck','bx2']){const n=clampN(it[k],50);if(n)S.inv[k]=(S.inv[k]||0)+n;}
+  if(r.special&&SPK[r.special]&&!SPK[r.special].excl)giveSpecial(r.special);}
+const PROMO_ERR={not_found:'Такого промокода нет.',expired:'Срок действия промокода закончился.',limit:'Промокод уже активировали максимальное число раз.',used:'Ты уже активировал этот промокод.',
+  banned:'Тебе закрыт доступ к промокодам.',need_tg:'Промокоды работают в игре внутри Telegram.',offline:'Нет связи с сервером. Попробуй позже.',bad_signature:'Не удалось подтвердить аккаунт Telegram. Перезапусти игру из бота.',no_bot_token:'Сервер ещё не настроен.',error:'Ошибка сервера. Попробуй ещё раз.'};
+let promoBusy=false;
+$('promoForm').addEventListener('submit',async e=>{e.preventDefault();if(promoBusy)return;const code=normCode($('promoIn').value);$('promoErr').textContent='';
+  if(code.length<3){$('promoErr').textContent='Введи промокод.';return;}
+  S.promoUsed=S.promoUsed||{};if(S.promoUsed[code]){$('promoErr').textContent=PROMO_ERR.used;A.deny();return;}
+  promoBusy=true;$('promoGo').disabled=true;let d=null;try{d=await PROMO_API.redeem(code);}catch(err){d={status:'offline'};}promoBusy=false;$('promoGo').disabled=false;
+  if(!d||d.status!=='ok'){$('promoErr').textContent=PROMO_ERR[d&&d.status]||PROMO_ERR.error;A.deny();if(d&&d.status==='used')S.promoUsed[code]=1;return;}
+  S.promoUsed[code]=1;grantReward(d.reward);save();renderStats();if(typeof renderPanel==='function')renderPanel();$('promoIn').value='';
+  const t=rewardText(d.reward);$('promoErr').innerHTML='';const ok=document.createElement('div');ok.className='promo-ok';ok.innerHTML='<b>🎉 Промокод активирован!</b><span></span>';ok.querySelector('span').textContent=t;$('promoErr').appendChild(ok);
+  A.reveal(3);const r=$('promoForm').getBoundingClientRect();burst(r.left+r.width/2,r.top,60,true,true,'#ffd56b');toast('🎟 <b>'+code+'</b>: '+t);});
+// админ
+function fillPromoAdmin(list){const sel=$('pSpecial');if(sel.options.length<2)SPECIAL.filter(x=>!x.excl).forEach(x=>{const o=document.createElement('option');o.value=x.id;o.textContent=x.n+' · '+RAR[x.r].n;sel.appendChild(o);});
+  if(!list)return;const box=$('pList');box.innerHTML='';if(!list.length){box.innerHTML='<div class="lb-empty">Промокодов пока нет.</div>';return;}
+  for(const p of list){const exp=p.expires_at?new Date(p.expires_at):null,dead=!p.active||(exp&&exp<new Date())||(p.max_uses>0&&p.uses>=p.max_uses);
+    const d=document.createElement('div');d.className='prow'+(dead?' off':'');d.innerHTML='<div><b></b><small></small><small></small></div><button class="chipbtn danger2" type="button">Удалить</button>';
+    d.querySelector('b').textContent=p.code;const sm=d.querySelectorAll('small');sm[0].textContent=rewardText(p.reward);sm[1].textContent='Активаций: '+p.uses+(p.max_uses?' / '+p.max_uses:' (без лимита)')+(exp?' · до '+exp.toLocaleDateString('ru-RU'):'');
+    d.querySelector('button').onclick=async()=>{const r=await PROMO_API.admin({action:'delete',code:p.code}).catch(()=>null);if(r&&r.list)fillPromoAdmin(r.list);toast('Промокод удалён');};box.appendChild(d);}}
+$('pCreate').onclick=async()=>{$('pErr').textContent='';const code=normCode($('pCode').value);if(code.length<3){$('pErr').textContent='Код — от 3 символов: буквы A–Z, цифры, - и _.';return;}
+  const reward={coins:parseNum($('pCoins').value)||0,crystals:clampN($('pCrys').value,100),spins:clampN($('pSpins').value,20),items:{bspeed:clampN($('pSpeed').value,50),bluck:clampN($('pLuck').value,50),bx2:clampN($('pX2').value,50)}};
+  if($('pSpecial').value)reward.special=$('pSpecial').value;
+  if(!reward.coins&&!reward.crystals&&!reward.spins&&!reward.items.bspeed&&!reward.items.bluck&&!reward.items.bx2&&!reward.special){$('pErr').textContent='Укажи хотя бы одну награду.';return;}
+  const r=await PROMO_API.admin({action:'create',code,reward,maxUses:clampN($('pMax').value,1e6),days:Number($('pDays').value)||0}).catch(()=>null);
+  if(!r||r.status!=='ok'){$('pErr').textContent={exists:'Такой код уже есть.',bad_code:'Неверный код.',empty_reward:'Пустая награда.',forbidden:'Нет прав.'}[r&&r.status]||'Не получилось создать. Проверь связь.';return;}
+  A.buy();toast('Промокод <b>'+code+'</b> создан');['pCode','pCoins','pCrys','pSpins','pSpeed','pLuck','pX2','pMax','pDays'].forEach(id=>$(id).value='');$('pSpecial').value='';fillPromoAdmin(r.list);};
+async function loadPromoAdmin(){fillPromoAdmin(null);const r=await PROMO_API.admin({action:'list'}).catch(()=>null);if(r&&r.list)fillPromoAdmin(r.list);}
 /* ================= КОЛЕСО УДАЧИ (за ребут) и ОПРАВА МОНЕТЫ ================= */
 function giveSpecial(id){const x=spNew(id),sl=freeSlot();if(sl!=null){x.slot=sl;startBuild(spKey(x),SP_TIME[SPK[id].r],'place');}if(typeof PG!=='undefined'&&PG&&PG.syncCity)PG.syncCity('sp');return SPK[id].n+(sl!=null?' — уже строится на газоне':' — лежит в инвентаре');}
 const rndOf=a=>a[Math.floor(Math.random()*a.length)];
@@ -2370,7 +2447,7 @@ function renderProfile(){
   hd.innerHTML=`<div class="pf-ava${ringCls(p.rb)}"><img src="${preview(sk)}" alt=""></div><div class="pf-who"><div class="pf-nick"></div><div class="pf-badges"></div></div>`;
   hd.querySelector('.pf-nick').textContent=cleanNick(p.nick)||'Игрок';
   const bd=hd.querySelector('.pf-badges');const badge=(t,c)=>{const s=document.createElement('span');s.className='pf-b'+(c?' '+c:'');s.textContent=t;bd.appendChild(s);};
-  if(p.owner)badge('👑 Создатель игры','gold');badge('ур. '+(Number(p.level)||1));if(Number(p.rb))badge('♻ '+p.rb+' ребут');{const rg=ringOf(p.rb);if(rg){badge('💍 '+rg.n+' оправа','ring');}}if(sk==='veteran')badge('🎖 Ветеран','vet');
+  if(p.owner)badge('👑 Создатель игры','gold');badge('ур. '+(Number(p.level)||1));if(Number(p.rb))badge('♻ '+p.rb+' ребут');{const rg=ringOf(p.rb);if(rg){badge('💍 '+rg.n+' оправа','rgb');}}if(sk==='veteran')badge('🎖 Ветеран','vet');
   badge(SK[sk].n,'');bd.lastChild.style.color=RAR[rr].c;
   if(PROF_API.like||p.self){const lk=document.createElement('button');lk.type='button';lk.className='pf-like'+(p.liked?' on':'');lk.innerHTML='❤ <b>'+(Number(p.likes)||0)+'</b>';
     if(p.self){lk.disabled=true;lk.title='Лайки от других игроков';}
@@ -2399,18 +2476,29 @@ function renderProfile(){
   if(!p.self&&!p.error){const tb=document.createElement('button');tb.type='button';tb.className='primary pf-edit';tb.textContent='🤝 Предложить трейд';
     tb.onclick=()=>{$('profModal').hidden=true;['lbModal','chatModal'].forEach(id=>{const e=$(id);if(e)e.hidden=true;});if(typeof openShop==='function')openShop();else $('shop').hidden=false;stab='market';renderShop();setTimeout(()=>window.openTradeTo&&window.openTradeTo({pid:p.pid||p.ref,nick:p.nick}),150);};b.appendChild(tb);}
   if(p.self){
-    if(!profEdit){const e=document.createElement('button');e.type='button';e.className='primary pf-edit';e.textContent='✏️ Настроить профиль';e.onclick=()=>{profEdit=true;renderProfile();};b.appendChild(e);}
+    if(!profEdit){
+      const go=fn=>()=>{$('profModal').hidden=true;fn();};
+      const shopTab=t=>{['lbModal','chatModal'].forEach(id=>{const e=$(id);if(e)e.hidden=true;});if(typeof openShop==='function')openShop();else $('shop').hidden=false;stab=t;renderShop();};
+      const mn=document.createElement('div');mn.className='pf-menu';const ni=invCount(),nt=(typeof MK!=='undefined'&&MK.toMe)?MK.toMe.length:0,ns=S.rb.spins||0;
+      const items=[['✏️','Настроить',()=>{profEdit=true;renderProfile();}],['🎒','Инвентарь'+(ni?'<em>'+ni+'</em>':''),go(()=>shopTab('inv'))],['🤝','Лоты и трейды'+(nt?'<em>'+nt+'</em>':''),go(()=>shopTab('market'))],
+        ['🎟','Промокод',go(()=>{if(typeof openSet==='function')openSet();else $('settings').hidden=false;setTimeout(()=>{try{$('promoIn').focus();}catch(e){}},450);})],['🏆','Рейтинг',go(()=>{if(typeof openLB==='function')openLB();else $('lbModal').hidden=false;})],
+        ['🎡','Колесо удачи'+(ns?'<em>'+ns+'</em>':''),go(()=>openWheel())]];
+      for(const [ic,t,fn] of items){const bt=document.createElement('button');bt.type='button';bt.innerHTML='<span>'+ic+'</span>'+t;bt.onclick=()=>{A.ui();fn();};mn.appendChild(bt);}
+      const mh=document.createElement('div');mh.className='alabel';mh.textContent='Меню профиля';b.insertBefore(mh,b.children[1]);b.insertBefore(mn,mh.nextSibling);}
     else{const f=document.createElement('div');f.className='pf-form';
-      f.innerHTML=`<div class="alabel">Описание профиля</div><textarea id="pfBio" maxlength="160" rows="3" placeholder="Например: коплю на Базу НЛО, меняю скины 🙂"></textarea><small class="pf-cnt" id="pfCnt"></small>
+      f.innerHTML=`<div class="alabel">Ник</div><input class="ainp" id="pfNick" maxlength="16" autocomplete="off" placeholder="2–16 символов" style="width:100%;box-sizing:border-box"><p class="err" id="pfNickErr"></p><div class="alabel">Описание профиля</div><textarea id="pfBio" maxlength="160" rows="3" placeholder="Например: коплю на Базу НЛО, меняю скины 🙂"></textarea><small class="pf-cnt" id="pfCnt"></small>
         <label class="pf-tog"><input type="checkbox" id="pfHide"><span>Скрыть профиль — другие увидят только ник, уровень и скин</span></label>
         <div class="btns"><button type="button" class="ghost" id="pfCancel">Отмена</button><button type="button" class="primary" id="pfSave">Сохранить</button></div>`;
-      b.appendChild(f);const ta=$('pfBio');ta.value=S.bio||'';$('pfHide').checked=!!S.phide;const cnt=()=>{$('pfCnt').textContent=ta.value.length+' / 160';};cnt();ta.oninput=cnt;
+      b.appendChild(f);const ta=$('pfBio');ta.value=S.bio||'';$('pfNick').value=S.nick||'';$('pfHide').checked=!!S.phide;const cnt=()=>{$('pfCnt').textContent=ta.value.length+' / 160';};cnt();ta.oninput=cnt;
       $('pfCancel').onclick=()=>{profEdit=false;renderProfile();};
-      $('pfSave').onclick=()=>{S.bio=ta.value.replace(/[<>]/g,'').slice(0,160).trim();S.phide=$('pfHide').checked;save();profEdit=false;profCur=Object.assign(myProfile(),{likes:profCur.likes});renderProfile();A.buy();toast('Профиль сохранён');try{pushScore(true);}catch(e){}};
+      $('pfSave').onclick=()=>{const nk=cleanNick($('pfNick').value);if(nk.length<2){$('pfNickErr').textContent='Ник должен быть от 2 до 16 символов.';return;}S.nick=nk;try{$('nickInput').value=nk;}catch(e){}S.bio=ta.value.replace(/[<>]/g,'').slice(0,160).trim();S.phide=$('pfHide').checked;save();profEdit=false;profCur=Object.assign(myProfile(),{likes:profCur.likes});renderProfile();A.buy();toast('Профиль сохранён');try{pushScore(true);}catch(e){}};
       setTimeout(()=>ta.focus(),50);}
   }
 }
 $('profClose').onclick=()=>{$('profModal').hidden=true;};
+$('pfBtn').onclick=()=>openProfile('me');
+let pfAvaKey='';function syncPfAva(){const k=S.skin+'|'+S.rb.count;if(k===pfAvaKey)return;pfAvaKey=k;$('pfAva').src=preview(SK[S.skin]?S.skin:'classic');$('pfAva').className=ringCls(S.rb.count).trim();}
+setInterval(syncPfAva,1000);setTimeout(syncPfAva,300);
 $('myProfBtn').onclick=()=>openProfile('me');
 
 /* ================= GOLDEN STAR ================= */
@@ -2671,6 +2759,9 @@ function lbRowEl(r,rank){
   li.append(rk,img,who,sc);li.onclick=()=>openProfile(r.me?'me':r.pid);return li;
 }
 let myPid='';
+const PROMO_URL='https://ktkcathaqbvrmpetbrgv.supabase.co/functions/v1/promo';
+async function promoCall(b){const r=await fetch(PROMO_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign({initData:tg&&tg.initData||''},b))});return await r.json();}
+PROMO_API={redeem:code=>tg&&tg.initData?promoCall({action:'redeem',code}):Promise.resolve({status:'need_tg'}),admin:b=>promoCall(b)};
 async function profCall(action,pid){const r=await fetch(LB_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({initData:tg&&tg.initData||'',action,pid})});const d=await r.json();
   if(d.status!=='ok'||!d.profile)return null;const p=d.profile;p.lots=(p.lots||[]).map(l=>({skin:l.skin,priceType:l.priceType,price:l.price,wantSkin:l.wantSkin}));p.likeStatus=d.likeStatus;return p;}
 PROF_API={load:ref=>ref==='me'?(myPid?profCall('profile',myPid):Promise.resolve(null)):profCall('profile',ref),like:ref=>profCall('like',ref)};
@@ -3141,6 +3232,7 @@ function openAdm(fromHash){
   if(!isOwnerFlag||!admEl.hidden)return;
   const r=$('admBtn').getBoundingClientRect();admEl.style.setProperty('--ox',(r.left+r.width/2)+'px');admEl.style.setProperty('--oy',(r.top+r.height/2)+'px');
   admEl.hidden=false;admEl.classList.remove('leave');admEl.classList.add('enter');document.body.classList.add('lock');
+  try{loadPromoAdmin();}catch(e){}
   A.whoosh();renderAdm();if(!fromHash&&location.hash!=='#admin')location.hash='admin';
 }
 function closeAdm(fromHash){
