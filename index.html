@@ -800,6 +800,10 @@ body.in-land .pl-hint .h1{display:none}body.in-land .pl-hint{color:#1d3a2a;text-
 .promo-ok{display:grid;gap:6px;justify-items:center;text-align:center}
 .promo-ok b{font:400 26px var(--f-display);color:#ffd56b}
 .promo-ok span{color:#3ddc84;font-weight:700}
+.evbar{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:4px auto 2px;max-width:560px}
+.evchip{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;font-size:13px;font-weight:800;background:linear-gradient(90deg,#ff5d8f,#b06bff,#5de0ff);background-size:200% 100%;animation:evflow 4s linear infinite;color:#fff;box-shadow:0 0 18px #b06bff66;text-shadow:0 1px 2px #0008}
+.evchip i{font-style:normal;font-family:var(--f-mono,monospace);background:#0006;border-radius:8px;padding:1px 6px}
+@keyframes evflow{to{background-position:200% 0}}
 .privtag{font-size:11px;font-weight:800;color:#5de0ff;padding:2px 8px;border-radius:999px;background:#5de0ff1a;margin:2px auto}
 .lb2.dec{background:transparent!important;color:var(--muted)!important;border:1px solid #ffffff22!important;margin-top:6px}
 .rb-gifts{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:10px 0 4px;font-size:12px}
@@ -884,6 +888,7 @@ body.in-land .pl-hint .h1{display:none}body.in-land .pl-hint{color:#1d3a2a;text-
 .pf-hidden{display:grid;justify-items:center;gap:4px;padding:22px 10px;border-radius:16px;background:#ffffff08;font-size:30px}
 .pf-hidden b{font-size:16px}.pf-hidden span{font-size:12px;color:var(--muted)}
 .pf-edit{width:100%}
+.skin .card .sb2{font-size:9.5px;font-weight:800;color:#ffb02e;text-align:center;line-height:1.2;padding:0 4px}
 .pfbtn{padding:0;overflow:visible}.pfbtn img{width:100%;height:100%;border-radius:50%;display:block}
 .pf-menu{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .pf-menu button{display:grid;justify-items:center;gap:4px;padding:10px 4px;border-radius:14px;border:1px solid #ffffff1a;background:linear-gradient(180deg,#221a3e,#140e26);color:var(--text);font:700 12px/1.2 inherit;font-family:inherit;cursor:pointer;position:relative}
@@ -963,6 +968,7 @@ body.in-land .pl-hint .h1{display:none}body.in-land .pl-hint{color:#1d3a2a;text-
 <main class="arena pad">
   <section class="stage" id="stage">
     <div class="buffs" id="buffs"></div>
+    <div class="evbar" id="evBar" hidden></div>
     <div class="bossui" id="bossUI"></div>
     <div class="coin-zone" id="zone">
       <div class="rays"></div>
@@ -979,7 +985,7 @@ body.in-land .pl-hint .h1{display:none}body.in-land .pl-hint{color:#1d3a2a;text-
     <button class="tk-banner rf-banner" id="rfBanner" type="button" hidden><span class="cn">👥</span><span id="rfBannerTxt">Пригласи друзей: +10% с их монет</span><b>→</b></button>
     <button class="tk-banner ch-banner" id="chBanner" type="button" hidden><span class="cn">✈</span><span id="chBannerTxt">Подпишись на канал — бонус</span><b>→</b></button>
     <button class="tk-banner" id="tkBanner" type="button"><span class="cn">₸</span><span id="tkBannerTxt">Скоро: мемкоин $TENGE</span><b>→</b></button>
-    <div class="under">Скин <b id="skinName">Классика</b> · <span id="skinBonus">+0%</span> к клику · <span id="clicks">0</span> кликов</div>
+    <div class="under">Скин <b id="skinName">Классика</b> · <span id="skinBonus"></span> · <span id="clicks">0</span> кликов</div>
   </section>
 
   <aside class="side">
@@ -1138,6 +1144,19 @@ body.in-land .pl-hint .h1{display:none}body.in-land .pl-hint{color:#1d3a2a;text-
         <div class="arow"><button class="chipbtn danger2" id="aZero" type="button">Баланс в 0</button><button class="chipbtn danger2" id="aZeroCr" type="button">Кристаллы в 0</button></div>
       </div>
       <div class="set-card">
+        <h2><span>🎉</span>Ивент для всех</h2>
+        <p class="note">Включается сразу у всех игроков и показывается над монетой с таймером.</p>
+        <div class="pgrid">
+          <label>Что ускорить<select class="asel" id="eKind"><option value="build">🏗 Стройка быстрее</option><option value="income">💰 Пассивный доход</option><option value="tap">👆 Монеты за тап</option><option value="luck">🍀 Удача в кейсах</option></select></label>
+          <label>Во сколько раз<select class="asel" id="eMult"><option>2</option><option>3</option><option selected>5</option><option>10</option></select></label>
+          <label>Сколько часов<input class="ainp" id="eHours" inputmode="decimal" placeholder="3"></label>
+          <label>Подпись (необязательно)<input class="ainp" id="eTitle" maxlength="60" placeholder="Выходные стройки"></label>
+        </div>
+        <button class="primary" id="eStart" type="button">Запустить ивент</button>
+        <p class="err" id="eErr"></p>
+        <div id="eList"></div>
+      </div>
+      <div class="set-card">
         <h2><span>🎟</span>Промокоды</h2>
         <p class="note" id="pNote">Игрок вводит код в Настройках. Один раз на игрока.</p>
         <div class="arow"><input class="ainp" id="pCode" maxlength="24" placeholder="Код, например TENGE2026" aria-label="Код"></div>
@@ -1149,6 +1168,7 @@ body.in-land .pl-hint .h1{display:none}body.in-land .pl-hint{color:#1d3a2a;text-
           <label>🍀 Удача<input class="ainp" id="pLuck" inputmode="numeric" placeholder="0"></label>
           <label>💰 Деньги ×2<input class="ainp" id="pX2" inputmode="numeric" placeholder="0"></label>
           <label>Здание<select class="asel" id="pSpecial"><option value="">— нет —</option></select></label>
+          <label>Скин<select class="asel" id="pSkin"><option value="">— нет —</option></select></label>
           <label>Активаций (0 — без лимита)<input class="ainp" id="pMax" inputmode="numeric" placeholder="100"></label>
           <label>Действует дней (0 — всегда)<input class="ainp" id="pDays" inputmode="numeric" placeholder="7"></label>
         </div>
@@ -1429,8 +1449,14 @@ body.in-land .pl-hint .h1{display:none}body.in-land .pl-hint{color:#1d3a2a;text-
 (function(){
 /* ================= DATA ================= */
 const RAR=[
-  {n:'Обычный',c:'#9aa3b5',bonus:0},{n:'Редкий',c:'#4aa3ff',bonus:.05},{n:'Эпический',c:'#b06bff',bonus:.1},
-  {n:'Легендарный',c:'#ffb02e',bonus:.2},{n:'Мифический',c:'#ff4d6d',bonus:.35}];
+  // бафы для тапов, когда скин надет: чем реже скин, тем мощнее
+  {n:'Обычный',   c:'#9aa3b5',bonus:.1, crit:0,   critX:3,enCut:0,  mega:0},
+  {n:'Редкий',    c:'#4aa3ff',bonus:.35,crit:.03, critX:3,enCut:0,  mega:0},
+  {n:'Эпический', c:'#b06bff',bonus:.75,crit:.06, critX:3,enCut:.15,mega:0},
+  {n:'Легендарный',c:'#ffb02e',bonus:1.5,crit:.1, critX:4,enCut:.25,mega:0},
+  {n:'Мифический',c:'#ff4d6d',bonus:3,  crit:.15, critX:5,enCut:.4, mega:10}];
+// короткое описание бафов скина
+function skinPerks(r,short){const q=RAR[r],o=['тап +'+Math.round(q.bonus*100)+'%'];if(q.crit)o.push('крит +'+Math.round(q.crit*100)+'%');if(q.critX>3)o.push('крит ×'+q.critX);if(q.enCut)o.push('энергия −'+Math.round(q.enCut*100)+'%');if(q.mega)o.push('каждый '+q.mega+'-й тап ×10');return short?o.slice(0,2).join(' · '):o.join(' · ');}
 const T='︎';
 const SKINS=[
   {id:'classic', n:'Классика',   r:0, c:['#fff1b8','#ffc83d','#a8620a'], e:['#b06c06','#ffd56b'], sym:'₸', pat:'none'},
@@ -1485,7 +1511,8 @@ const CASES=[
   {id:'myth',   n:'Мифический кейс',  tag:'МИФ',    sub:'Лучший шанс: мифик 4%',                  price:1.5e8, c:'#ff4d6d', w:[0,0,70,26,4]},
 ];
 const UP=[
-  {id:'tap',   tab:'click', ic:'✊', n:'Мультитап',         d:l=>'+1 монета за клик (сейчас '+(1+l)+'). Клик тратит столько же энергии.', base:1000, g:2,   max:25},
+  {id:'tap',   tab:'click', ic:'✊', n:'Мультитап',         d:l=>'+1 монета за клик (сейчас '+(1+l)+'). Энергии на клик: '+(1+Math.floor(l/2))+'.', base:1000, g:1.75, max:30},
+  {id:'grip',  tab:'click', ic:'💼', n:'Деловая хватка',    d:l=>'Клик приносит ещё и пассивный доход: '+(.12+.04*l).toFixed(2).replace('.',',')+' с за каждую единицу энергии', base:2e4, g:2.8, max:5, svg:'grip'},
   {id:'crit',  tab:'click', ic:'⚡', n:'Критический удар',  d:l=>'+2% шанс крита ×3 (сейчас '+(l*2)+'%)',  base:3000,  g:2.2, max:10},
   {id:'combo', tab:'click', ic:'🔥', n:'Горячие пальцы',    d:l=>'Потолок комбо +×0,1 (сейчас ×'+(1.3+l*.1).toFixed(1).replace('.',',')+')', base:5000, g:2.5, max:5},
   {id:'lucky', tab:'click', ic:'★',  n:'Звездочёт',         d:l=>'Бонусная звезда появляется чаще',         base:4000,  g:2.4, max:5},
@@ -1557,20 +1584,21 @@ const BCASES=[
   {id:'bc3',n:'Кейс мегаполиса',  tag:'МЕГА',  price:6e7, c:'#5de0ff',w:[30,30,28,10,2]},
 ];
 const BRAR=i=>i?RAR[i]:{n:'Баф',c:'#cfd6e4'};
-const luckW=w=>buffOn('bluck')?w.map((x,i)=>i>=2?x*2:x):w;
+const luckW=w=>{const k=(buffOn('bluck')?2:1)*evMult('luck');return k>1?w.map((x,i)=>i>=2?x*k:x):w;};
 const pctW=w=>{const t=w.reduce((a,x)=>a+x,0)||1;return w.map(x=>x/t*100);};
 const fmtPct=p=>(p>=10?p.toFixed(0):p>=1?p.toFixed(1):p.toFixed(2)).replace(/(\.\d*?)0+$/,'$1').replace(/\.$/,'').replace('.',',');
 const invHeat=id=>{const h=(S.ih||{})[id];if(!h)return 0;return Math.max(0,h.n-Math.floor((Date.now()-h.t)/3600000));};
 const invPrice=it=>Math.round(Math.max(it.min,perHour()*it.k)*Math.pow(1.4,invHeat(it.id)));
 const invCount=()=>INV.reduce((a,x)=>a+((S.inv&&S.inv[x.id])||0),0);
 function startBuild(id,need,kind){S.build=S.build||{};S.build[id]={need,done:0,kind:kind||''};if(!S.buildT)S.buildT=Date.now();}
-function buildLeft(id){const b=S.build&&S.build[id];if(!b)return 0;return Math.max(0,b.need-b.done)/(buffOn('bspeed')?3:1)/(1+.15*pk('fast'));}
+function buildLeft(id){const b=S.build&&S.build[id];if(!b)return 0;return Math.max(0,b.need-b.done)/((buffOn('bspeed')?3:1)+evMult('build')-1)/(1+.15*pk('fast'));}
 function buildFrac(id){const b=S.build&&S.build[id];return b?Math.min(1,b.done/b.need):0;}
 function buildTick(){
   const t=Date.now(),from=S.buildT||t;S.buildT=t;if(!S.build)return;
   const dt=Math.max(0,(t-from)/1000);if(!dt)return;
   const boost=Math.max(0,(Math.min(t,(S.buffs&&S.buffs.bspeed)||0)-from)/1000);   // часть времени под ускорителем считается вдвойне
-  const inc=(dt+2*Math.min(dt,boost))*(1+.15*pk('fast')),fin=[];     // ускоритель: ×3
+  const ev=(typeof EVENTS!=='undefined'&&EVENTS||[]).find(e=>e.kind==='build'),evo=ev?Math.max(0,(Math.min(t,ev.end)-from)/1000):0;
+  const inc=(dt+2*Math.min(dt,boost)+(ev?(ev.mult-1)*Math.min(dt,evo):0))*(1+.15*pk('fast')),fin=[];     // ускоритель: ×3
   for(const k in S.build){S.build[k].done+=inc;if(S.build[k].done>=S.build[k].need)fin.push(k);}
   for(const k of fin)finishBuild(k);
 }
@@ -1831,19 +1859,21 @@ const rbMult=()=>1+.25*((S.rb&&S.rb.count)||0);
 const skinBonus=()=>RAR[SK[S.skin].r].bonus;
 function basePs(){return cityPH()/3600*(1+spBonus());}
 // бафы складываются, а не умножаются: +100% и +200% = +300%
-const buffAdd=k=>(k==='click'?(buffOn('energy')?1:0):(buffOn('rain')?1:0))+(buffOn('frenzy')?2:0)+(buffOn('bx2')?1:0)+(buffOn('wind')?2:0);
+const buffAdd=k=>(k==='click'?(buffOn('energy')?1:0)+evMult('tap')-1:(buffOn('rain')?1:0)+evMult('income')-1)+(buffOn('frenzy')?2:0)+(buffOn('bx2')?1:0)+(buffOn('wind')?2:0);
 function perSec(){return basePs()*rbMult()*plPs()*(1+.25*pk('vault'))*(1+buffAdd('ps'));}
 const perHour=()=>perSec()*3600;
 const comboCap=()=>1.3+lv('combo')*.1;
 const comboMult=()=>1+combo*(comboCap()-1);
 const rawClick=()=>(1+lv('tap'))*(1+skinBonus())*rbMult()*plClick()*(1+.25*pk('hands'));
-const clickValue=()=>rawClick()*comboMult()*(1+buffAdd('click'));
-const critChance=()=>(buffOn('clover')||(S.adm&&S.adm.crit))?1:Math.min(1,lv('crit')*.02+pk('luck2')*.03+plCrit());
-const CRIT_X=3;
+// клик = монеты за клик + немного пассивного дохода за потраченную энергию (так клики остаются полезными на любом этапе)
+const tapPassSec=()=>(.12+.04*lv('grip'))*tapCost();
+const clickValue=()=>rawClick()*comboMult()*(1+buffAdd('click'))+perSec()*tapPassSec();
+const critChance=()=>(buffOn('clover')||(S.adm&&S.adm.crit))?1:Math.min(1,lv('crit')*.02+pk('luck2')*.03+plCrit()+(RAR[SK[S.skin]?SK[S.skin].r:0].crit||0));
+const CRIT_X=3;const critX=()=>RAR[SK[S.skin]?SK[S.skin].r:0].critX||CRIT_X;
 /* --- энергия, как в Hamster Kombat --- */
 const enMax=()=>1000+500*lv('enmax');
 const enRegen=()=>3+lv('enreg');
-const tapCost=()=>1+lv('tap');
+const tapCost=()=>Math.max(1,Math.round((1+Math.floor(lv('tap')/2))*(1-(RAR[SK[S.skin]?SK[S.skin].r:0].enCut||0))));
 function energyNow(){const m=enMax();if(S.en==null){S.en=m;S.enT=Date.now();}return Math.min(m,S.en+Math.max(0,Date.now()-(S.enT||Date.now()))/1000*enRegen());}
 function setEnergy(v){S.en=Math.max(0,Math.min(enMax(),v));S.enT=Date.now();}
 const EN_FREE=3;
@@ -2022,7 +2052,8 @@ function hit(pt,client,auto){
   if(buffOn('adren'))combo=1;
   if(combo>=1&&!S.maxCombo)S.maxCombo=true;
   let v=clickValue();const crit=Math.random()<critChance();
-  if(crit){v*=CRIT_X;S.crits++;}
+  if(crit){v*=critX();S.crits++;}
+  {const mg=RAR[SK[S.skin]?SK[S.skin].r:0].mega;if(mg&&!auto){hit.mt=(hit.mt||0)+1;if(hit.mt>=mg){hit.mt=0;v*=10;M.flash=1;M.spT+=Math.PI*2;shake();floatText(client.x,client.y-40,'МЕГА-ТАП ×10',true);}}}
   A.coin(combo,crit,auto);
   S.coins+=v;S.earned+=v;S.clicks++;
   qProg('clicks',1);if(crit)qProg('crits',1);if(combo>=1&&!hit.cq){hit.cq=1;qProg('combo',1);}if(combo<.8)hit.cq=0;
@@ -2110,7 +2141,7 @@ requestAnimationFrame(hudLoop);
 function setTxt(id,v){const e=$(id);if(e&&e.textContent!==String(v))e.textContent=v;}
 function renderStats(){
   setTxt('perClick',fmt(clickValue()));setTxt('perSec',fmt(perHour()));
-  setTxt('skinBonus','+'+Math.round(skinBonus()*100)+'%');setTxt('clicks',fmt(S.clicks));
+  setTxt('skinBonus',skinPerks(SK[S.skin]?SK[S.skin].r:0));setTxt('clicks',fmt(S.clicks));
   const L=level(),from=L>1?lvlNeed(L-1):0,to=lvlNeed(L),pr=Math.min(1,(S.earned-from)/(to-from));
   setTxt('lvlNum',L);setTxt('lvlNum2',L);setTxt('lvlXp',fmt(S.earned-from)+' / '+fmt(to-from)+'');
   {const w=(pr*100).toFixed(1)+'%';if(renderStats.w!==w){renderStats.w=w;$('lvlBar').style.width=w;}}
@@ -2133,6 +2164,7 @@ function checkLevel(){
 function itemHTML(ic,name,lvl,desc,price,grow){return `<span class="ic">${ic}</span><span><span class="nm">${name}<span class="lv">${lvl}</span></span><span class="ds">${desc}</span></span><span class="prc"><span class="pr">${price}</span>${grow?`<small class="gr">${grow}</small>`:''}</span>`;}
 const UPSVG={
   battery:'<svg class="icsvg" viewBox="0 0 48 48"><rect x="8" y="12" width="30" height="26" rx="6" fill="#1e2a3a" stroke="#5de0ff" stroke-width="3"/><rect x="38" y="20" width="5" height="10" rx="2" fill="#5de0ff"/><rect x="12" y="16" width="7" height="18" rx="2" fill="#3ddc84"/><rect x="21" y="16" width="7" height="18" rx="2" fill="#3ddc84"/><rect x="30" y="16" width="5" height="18" rx="2" fill="#3ddc8466"/></svg>',
+  grip:'<svg class="icsvg" viewBox="0 0 48 48"><rect x="6" y="16" width="36" height="24" rx="5" fill="#8a5a30" stroke="#140c26" stroke-width="2.4"/><path d="M18 16v-4a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v4" fill="none" stroke="#140c26" stroke-width="2.4"/><rect x="6" y="24" width="36" height="4" fill="#5a3a1e"/><rect x="20" y="22" width="8" height="8" rx="2" fill="#ffd84a" stroke="#140c26" stroke-width="1.6"/><circle cx="38" cy="10" r="6" fill="#3ddc84" stroke="#140c26" stroke-width="2"/><path d="M38 7v6M35 10h6" stroke="#fff" stroke-width="2"/></svg>',
   bolt:'<svg class="icsvg" viewBox="0 0 48 48"><circle cx="24" cy="24" r="19" fill="#1e2a3a" stroke="#ffd84a" stroke-width="3"/><path d="M27 7 14 27h9l-3 14 14-21h-9z" fill="#ffd84a" stroke="#b06c06" stroke-width="1.5"/></svg>'};
 function renderPanel(){
   const body=$('panelBody');body.innerHTML='';
@@ -2215,7 +2247,7 @@ function renderShop(){
     }
     body.appendChild(g);
     const lg=document.createElement('div');lg.className='legend';lg.style.marginTop='16px';
-    lg.innerHTML=RAR.map(r=>`<span><b style="color:${r.c}">●</b> ${r.n} — +${Math.round(r.bonus*100)}% к клику</span>`).join('')+'<span>Дубликат возвращает 35% цены кейса</span>';
+    lg.innerHTML=RAR.map((r,i)=>`<span><b style="color:${r.c}">●</b> ${r.n} — ${skinPerks(i)}</span>`).join('')+'<span>Дубликат возвращает 35% цены кейса</span>';
     body.appendChild(lg);
   }else if(stab==='market'){
     renderMarket(body);
@@ -2230,7 +2262,7 @@ function renderShop(){
     for(const s of SKINS){
       const own=!!S.skins[s.id],eq=S.skin===s.id;
       const b=document.createElement('button');b.type='button';b.className='skin'+(own?'':' locked')+(eq?' eq':'');b.style.setProperty('--rc',RAR[s.r].c);
-      b.innerHTML=`<div class="card"><img src="${preview(s.id)}" alt=""><span class="sn">${own?s.n:'???'}</span><span class="sr">${RAR[s.r].n}</span>${RAR[s.r].bonus?`<span class="sb">+${Math.round(RAR[s.r].bonus*100)}% к клику</span>`:'<span class="sb" style="color:var(--muted)">без бонуса</span>'}${minPrice(s.id)?`<span class="smin">мин. ${fmt(minPrice(s.id))} ₸</span>`:''}<span class="eqb">${own?(eq?'Надет':'Надеть'):(s.id==='meteor'?'100 метеоритов':s.excl?'За кристаллы':'Из кейса')}</span></div>`;
+      b.innerHTML=`<div class="card"><img src="${preview(s.id)}" alt=""><span class="sn">${own?s.n:'???'}</span><span class="sr">${RAR[s.r].n}</span><span class="sb">${skinPerks(s.r,true)}</span>${s.r>=2?`<span class="sb2">${skinPerks(s.r).split(' · ').slice(2).join(' · ')}</span>`:''}${minPrice(s.id)?`<span class="smin">мин. ${fmt(minPrice(s.id))} ₸</span>`:''}<span class="eqb">${own?(eq?'Надет':'Надеть'):(s.id==='meteor'?'100 метеоритов':s.excl?'За кристаллы':'Из кейса')}</span></div>`;
       const card=b.querySelector('.card');
       if(!reduceM){b.addEventListener('pointermove',e=>{const r=card.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;card.style.transform=`rotateY(${(x-.5)*24}deg) rotateX(${(.5-y)*24}deg)`;card.style.setProperty('--mx',x*100+'%');card.style.setProperty('--my',y*100+'%');});
         b.addEventListener('pointerleave',()=>{card.style.transform='';});}
@@ -2314,7 +2346,7 @@ function reveal(c,win){
   if(dup){refund=Math.round(c.price*.35);S.coins+=refund;}else S.skins[win.id]=1;
   $('reel').hidden=true;
   const res=$('result');res.style.setProperty('--rc',RAR[win.r].c);
-  res.innerHTML=`<div class="burst"></div><img src="${preview(win.id)}" alt=""><div class="rr" style="color:${RAR[win.r].c}">${RAR[win.r].n}</div><div class="rn">${win.n}</div><div class="rd">${dup?'Уже есть — вернули '+fmt(refund)+' ₸':(RAR[win.r].bonus?'Новый скин! +'+Math.round(RAR[win.r].bonus*100)+'% к клику, когда надет':'Новый скин в коллекции!')}</div>${bi?`<div class="rbonus">${ICON(bi.id)}<span>Бонус: <b>${bi.n}</b> (15 мин) — в инвентаре</span></div>`:''}`;
+  res.innerHTML=`<div class="burst"></div><img src="${preview(win.id)}" alt=""><div class="rr" style="color:${RAR[win.r].c}">${RAR[win.r].n}</div><div class="rn">${win.n}</div><div class="rd">${dup?'Уже есть — вернули '+fmt(refund)+' ₸':'Новый скин! Когда надет: '+skinPerks(win.r)}</div>${bi?`<div class="rbonus">${ICON(bi.id)}<span>Бонус: <b>${bi.n}</b> (15 мин) — в инвентаре</span></div>`:''}`;
   res.hidden=false;
   A.reveal(win.r);const r=res.getBoundingClientRect();burst(r.left+r.width/2,r.top+80,win.r>=3?80:35,win.r>=3,true,RAR[win.r].c);if(win.r>=3)shake();
   const canAgain=S.coins>=c.price;
@@ -2327,16 +2359,40 @@ function reveal(c,win){
   renderStats();checkAch();save();
 }
 
+/* ================= ИВЕНТЫ ДЛЯ ВСЕХ ================= */
+var EVENT_API=EVENT_API||{list:async()=>[],start:async()=>({status:'offline'}),stop:async()=>({status:'offline'})};
+const EVK={build:{n:'Стройка',ic:'🏗'},income:{n:'Доход',ic:'💰'},tap:{n:'Тапы',ic:'👆'},luck:{n:'Удача в кейсах',ic:'🍀'}};
+var EVENTS=[];
+function evMult(k){const now=Date.now();const e=(EVENTS||[]).find(x=>x.kind===k&&x.end>now);return e?e.mult:1;}
+function setEvents(l){if(!Array.isArray(l))return;const seen=S.evSeen||(S.evSeen={});
+  EVENTS=l.map(e=>({kind:String(e.kind),mult:Math.max(1,Math.min(10,Number(e.mult)||1)),end:typeof e.ends_at==='number'?e.ends_at:Date.parse(e.ends_at),title:String(e.title||'').slice(0,60)})).filter(e=>EVK[e.kind]&&e.end>Date.now());
+  for(const e of EVENTS){const key=e.kind+e.end;if(!seen[key]){seen[key]=1;toast('🎉 <b>Ивент!</b> '+EVK[e.kind].ic+' '+EVK[e.kind].n+' ×'+e.mult+(e.title?' — '+e.title.replace(/[<>]/g,''):''));try{A.reveal(3);}catch(x){}}}
+  const ks=Object.keys(seen);if(ks.length>40)ks.slice(0,ks.length-40).forEach(k=>delete seen[k]);
+  renderEvBar(true);try{if(!$('admin').hidden)renderEvAdmin();}catch(x){}}
+async function loadEvents(){try{setEvents(await EVENT_API.list());}catch(e){}}
+function renderEvBar(full){const box=$('evBar');const now=Date.now();const act=EVENTS.filter(e=>e.end>now);box.hidden=!act.length;if(!act.length){box.innerHTML='';return;}
+  if(full||box.children.length!==act.length){box.innerHTML='';for(const e of act){const d=document.createElement('div');d.className='evchip';d.title=e.title||'';d.innerHTML=`🎉 ${EVK[e.kind].ic} ${EVK[e.kind].n} ×${String(e.mult).replace('.',',')} <i></i>`;box.appendChild(d);}}
+  act.forEach((e,i)=>{const t=box.children[i]&&box.children[i].querySelector('i');if(t)t.textContent=fmtT((e.end-now)/1000);});}
+setInterval(()=>renderEvBar(false),1000);setTimeout(loadEvents,1200);setInterval(()=>{if(!document.hidden)loadEvents();},60000);
+function renderEvAdmin(){const box=$('eList');box.innerHTML='';const now=Date.now();const act=EVENTS.filter(e=>e.end>now);if(!act.length){box.innerHTML='<div class="lb-empty">Сейчас ивентов нет.</div>';return;}
+  for(const e of act){const d=document.createElement('div');d.className='prow';d.innerHTML='<div><b></b><small></small></div><button class="chipbtn danger2" type="button">Остановить</button>';
+    d.querySelector('b').textContent=EVK[e.kind].ic+' '+EVK[e.kind].n+' ×'+e.mult;d.querySelector('small').textContent=(e.title?e.title+' · ':'')+'ещё '+fmtT((e.end-now)/1000);
+    d.querySelector('button').onclick=async()=>{const r=await EVENT_API.stop(e.kind).catch(()=>null);if(r&&r.events)setEvents(r.events);toast('Ивент остановлен');};box.appendChild(d);}}
+$('eStart').onclick=async()=>{$('eErr').textContent='';const h=Number(String($('eHours').value).replace(',','.'))||0;if(!(h>=.25&&h<=72)){$('eErr').textContent='Укажи от 0,25 до 72 часов.';return;}
+  const r=await EVENT_API.start({kind:$('eKind').value,mult:Number($('eMult').value),hours:h,title:$('eTitle').value.trim()}).catch(()=>null);
+  if(!r||r.status!=='ok'){$('eErr').textContent=r&&r.status==='forbidden'?'Нет прав.':'Не получилось запустить. Проверь связь.';return;}
+  A.buy();setEvents(r.events);$('eHours').value='';$('eTitle').value='';};
 /* ================= ПРОМОКОДЫ ================= */
 var PROMO_API=PROMO_API||{redeem:async()=>({status:'offline'}),admin:async()=>({status:'offline'})};
 const normCode=s=>String(s||'').toUpperCase().replace(/[^A-Z0-9_-]/g,'').slice(0,24);
 const clampN=(v,mx)=>{const n=Math.floor(Number(v));return Number.isFinite(n)?Math.max(0,Math.min(mx,n)):0;};
 function rewardText(r){r=r||{};const o=[];if(r.coins)o.push('+'+fmt(r.coins)+' ₸');if(r.crystals)o.push('+'+r.crystals+' 💎');if(r.spins)o.push('+'+r.spins+' 🎡');
-  const it=r.items||{};if(it.bspeed)o.push(it.bspeed+'× ускоритель');if(it.bluck)o.push(it.bluck+'× удача');if(it.bx2)o.push(it.bx2+'× деньги ×2');if(r.special&&SPK[r.special])o.push('🏛 '+SPK[r.special].n);return o.join(' · ');}
+  const it=r.items||{};if(it.bspeed)o.push(it.bspeed+'× ускоритель');if(it.bluck)o.push(it.bluck+'× удача');if(it.bx2)o.push(it.bx2+'× деньги ×2');if(r.special&&SPK[r.special])o.push('🏛 '+SPK[r.special].n);if(r.skin&&SK[r.skin])o.push('🎨 скин «'+SK[r.skin].n+'»');return o.join(' · ');}
 function grantReward(r){r=r||{};const c=clampN(r.coins,1e15);if(c){S.coins+=c;S.earned+=c;}
   const cr=clampN(r.crystals,100);if(cr)S.rb.crystals+=cr;const sp=clampN(r.spins,20);if(sp)S.rb.spins=(S.rb.spins||0)+sp;
   const it=r.items||{};S.inv=S.inv||{};for(const k of ['bspeed','bluck','bx2']){const n=clampN(it[k],50);if(n)S.inv[k]=(S.inv[k]||0)+n;}
-  if(r.special&&SPK[r.special]&&!SPK[r.special].excl)giveSpecial(r.special);}
+  if(r.special&&SPK[r.special]&&!SPK[r.special].excl)giveSpecial(r.special);
+  if(r.skin&&SK[r.skin]&&r.skin!=='classic'){if(S.skins[r.skin]){const v=Math.max(1e5,minPrice(r.skin)||0);S.coins+=v;S.earned+=v;r._dup=v;}else S.skins[r.skin]=1;}}
 const PROMO_ERR={not_found:'Такого промокода нет.',expired:'Срок действия промокода закончился.',limit:'Промокод уже активировали максимальное число раз.',used:'Ты уже активировал этот промокод.',
   banned:'Тебе закрыт доступ к промокодам.',need_tg:'Промокоды работают в игре внутри Telegram.',offline:'Нет связи с сервером. Попробуй позже.',bad_signature:'Не удалось подтвердить аккаунт Telegram. Перезапусти игру из бота.',no_bot_token:'Сервер ещё не настроен.',error:'Ошибка сервера. Попробуй ещё раз.'};
 let promoBusy=false;
@@ -2345,11 +2401,11 @@ $('promoForm').addEventListener('submit',async e=>{e.preventDefault();if(promoBu
   S.promoUsed=S.promoUsed||{};if(S.promoUsed[code]){$('promoErr').textContent=PROMO_ERR.used;A.deny();return;}
   promoBusy=true;$('promoGo').disabled=true;let d=null;try{d=await PROMO_API.redeem(code);}catch(err){d={status:'offline'};}promoBusy=false;$('promoGo').disabled=false;
   if(!d||d.status!=='ok'){$('promoErr').textContent=PROMO_ERR[d&&d.status]||PROMO_ERR.error;A.deny();if(d&&d.status==='used')S.promoUsed[code]=1;return;}
-  S.promoUsed[code]=1;grantReward(d.reward);save();renderStats();if(typeof renderPanel==='function')renderPanel();$('promoIn').value='';
-  const t=rewardText(d.reward);$('promoErr').innerHTML='';const ok=document.createElement('div');ok.className='promo-ok';ok.innerHTML='<b>🎉 Промокод активирован!</b><span></span>';ok.querySelector('span').textContent=t;$('promoErr').appendChild(ok);
+  S.promoUsed[code]=1;grantReward(d.reward);if(d.reward&&d.reward.skin&&SK[d.reward.skin]&&!d.reward._dup)setTimeout(()=>{try{equip(d.reward.skin);}catch(e){}},600);save();renderStats();if(typeof renderPanel==='function')renderPanel();$('promoIn').value='';
+  const t=rewardText(d.reward)+(d.reward&&d.reward._dup?' (скин уже был — вместо него +'+fmt(d.reward._dup)+' ₸)':'');$('promoErr').innerHTML='';const ok=document.createElement('div');ok.className='promo-ok';ok.innerHTML='<b>🎉 Промокод активирован!</b><span></span>';ok.querySelector('span').textContent=t;$('promoErr').appendChild(ok);
   A.reveal(3);const r=$('promoForm').getBoundingClientRect();burst(r.left+r.width/2,r.top,60,true,true,'#ffd56b');toast('🎟 <b>'+code+'</b>: '+t);});
 // админ
-function fillPromoAdmin(list){const sel=$('pSpecial');if(sel.options.length<2)SPECIAL.filter(x=>!x.excl).forEach(x=>{const o=document.createElement('option');o.value=x.id;o.textContent=x.n+' · '+RAR[x.r].n;sel.appendChild(o);});
+function fillPromoAdmin(list){const ss=$('pSkin');if(ss.options.length<2)SKINS.filter(k=>k.id!=='classic').slice().sort((a,b)=>b.r-a.r).forEach(k=>{const o=document.createElement('option');o.value=k.id;o.textContent=k.n+' · '+RAR[k.r].n;ss.appendChild(o);});const sel=$('pSpecial');if(sel.options.length<2)SPECIAL.filter(x=>!x.excl).forEach(x=>{const o=document.createElement('option');o.value=x.id;o.textContent=x.n+' · '+RAR[x.r].n;sel.appendChild(o);});
   if(!list)return;const box=$('pList');box.innerHTML='';if(!list.length){box.innerHTML='<div class="lb-empty">Промокодов пока нет.</div>';return;}
   for(const p of list){const exp=p.expires_at?new Date(p.expires_at):null,dead=!p.active||(exp&&exp<new Date())||(p.max_uses>0&&p.uses>=p.max_uses);
     const d=document.createElement('div');d.className='prow'+(dead?' off':'');d.innerHTML='<div><b></b><small></small><small></small></div><button class="chipbtn danger2" type="button">Удалить</button>';
@@ -2357,11 +2413,11 @@ function fillPromoAdmin(list){const sel=$('pSpecial');if(sel.options.length<2)SP
     d.querySelector('button').onclick=async()=>{const r=await PROMO_API.admin({action:'delete',code:p.code}).catch(()=>null);if(r&&r.list)fillPromoAdmin(r.list);toast('Промокод удалён');};box.appendChild(d);}}
 $('pCreate').onclick=async()=>{$('pErr').textContent='';const code=normCode($('pCode').value);if(code.length<3){$('pErr').textContent='Код — от 3 символов: буквы A–Z, цифры, - и _.';return;}
   const reward={coins:parseNum($('pCoins').value)||0,crystals:clampN($('pCrys').value,100),spins:clampN($('pSpins').value,20),items:{bspeed:clampN($('pSpeed').value,50),bluck:clampN($('pLuck').value,50),bx2:clampN($('pX2').value,50)}};
-  if($('pSpecial').value)reward.special=$('pSpecial').value;
-  if(!reward.coins&&!reward.crystals&&!reward.spins&&!reward.items.bspeed&&!reward.items.bluck&&!reward.items.bx2&&!reward.special){$('pErr').textContent='Укажи хотя бы одну награду.';return;}
+  if($('pSpecial').value)reward.special=$('pSpecial').value;if($('pSkin').value)reward.skin=$('pSkin').value;
+  if(!reward.coins&&!reward.crystals&&!reward.spins&&!reward.items.bspeed&&!reward.items.bluck&&!reward.items.bx2&&!reward.special&&!reward.skin){$('pErr').textContent='Укажи хотя бы одну награду.';return;}
   const r=await PROMO_API.admin({action:'create',code,reward,maxUses:clampN($('pMax').value,1e6),days:Number($('pDays').value)||0}).catch(()=>null);
   if(!r||r.status!=='ok'){$('pErr').textContent={exists:'Такой код уже есть.',bad_code:'Неверный код.',empty_reward:'Пустая награда.',forbidden:'Нет прав.'}[r&&r.status]||'Не получилось создать. Проверь связь.';return;}
-  A.buy();toast('Промокод <b>'+code+'</b> создан');['pCode','pCoins','pCrys','pSpins','pSpeed','pLuck','pX2','pMax','pDays'].forEach(id=>$(id).value='');$('pSpecial').value='';fillPromoAdmin(r.list);};
+  A.buy();toast('Промокод <b>'+code+'</b> создан');['pCode','pCoins','pCrys','pSpins','pSpeed','pLuck','pX2','pMax','pDays'].forEach(id=>$(id).value='');$('pSpecial').value='';$('pSkin').value='';fillPromoAdmin(r.list);};
 async function loadPromoAdmin(){fillPromoAdmin(null);const r=await PROMO_API.admin({action:'list'}).catch(()=>null);if(r&&r.list)fillPromoAdmin(r.list);}
 /* ================= КОЛЕСО УДАЧИ (за ребут) и ОПРАВА МОНЕТЫ ================= */
 function giveSpecial(id){const x=spNew(id),sl=freeSlot();if(sl!=null){x.slot=sl;startBuild(spKey(x),SP_TIME[SPK[id].r],'place');}if(typeof PG!=='undefined'&&PG&&PG.syncCity)PG.syncCity('sp');return SPK[id].n+(sl!=null?' — уже строится на газоне':' — лежит в инвентаре');}
@@ -2759,6 +2815,9 @@ function lbRowEl(r,rank){
   li.append(rk,img,who,sc);li.onclick=()=>openProfile(r.me?'me':r.pid);return li;
 }
 let myPid='';
+const EVENTS_URL='https://ktkcathaqbvrmpetbrgv.supabase.co/functions/v1/events';
+async function evCall(b){const r=await fetch(EVENTS_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign({initData:tg&&tg.initData||''},b))});return await r.json();}
+EVENT_API={list:async()=>{const d=await evCall({action:'list'});return d.events||[];},start:b=>evCall(Object.assign({action:'start'},b)),stop:k=>evCall({action:'stop',kind:k})};
 const PROMO_URL='https://ktkcathaqbvrmpetbrgv.supabase.co/functions/v1/promo';
 async function promoCall(b){const r=await fetch(PROMO_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign({initData:tg&&tg.initData||''},b))});return await r.json();}
 PROMO_API={redeem:code=>tg&&tg.initData?promoCall({action:'redeem',code}):Promise.resolve({status:'need_tg'}),admin:b=>promoCall(b)};
@@ -2971,7 +3030,7 @@ const PERKS=[
   {id:'vault', n:'Вечный банк',       d:l=>'+25% к пассивному доходу навсегда. Сейчас +'+(l*25)+'%.',              cost:l=>l+1, max:5},
   {id:'head',  n:'Фора',              d:l=>'После ребута начинаешь не с нуля: '+['0','100К','1М','10М'][Math.min(3,l)]+' монет → '+['100К','1М','10М','10М'][Math.min(3,l)]+'.', cost:l=>1, max:3},
   {id:'luck2', n:'Счастливая монета', d:l=>'+3% шанс крита навсегда. Сейчас +'+(l*3)+'%.',                           cost:l=>1, max:4},
-  {id:'phoenix',n:'Скин «Феникс»',    d:l=>'Мифический скин, которого нет в кейсах. +35% к клику, когда надет.',   cost:l=>2, max:1},
+  {id:'phoenix',n:'Скин «Феникс»',    d:l=>'Мифический скин, которого нет в кейсах. Когда надет: '+skinPerks(4)+'.',   cost:l=>2, max:1},
   {id:'slot',  n:'Расширение газона', d:l=>'+1 место для особых зданий в городе. Сейчас мест: '+(SP_SLOTS0+l)+'.',                cost:l=>l+2, max:2},
   {id:'fast',  n:'Бригада мастеров',  d:l=>'Все стройки быстрее на 15% навсегда. Сейчас +'+(l*15)+'%.',                         cost:l=>l+1, max:3},
   {id:'offh',  n:'Ночная смена',      d:l=>'+1 час оффлайн-заработка. Сейчас максимум '+(3+l)+' ч.',                            cost:l=>l+1, max:3},
@@ -3232,6 +3291,7 @@ function openAdm(fromHash){
   if(!isOwnerFlag||!admEl.hidden)return;
   const r=$('admBtn').getBoundingClientRect();admEl.style.setProperty('--ox',(r.left+r.width/2)+'px');admEl.style.setProperty('--oy',(r.top+r.height/2)+'px');
   admEl.hidden=false;admEl.classList.remove('leave');admEl.classList.add('enter');document.body.classList.add('lock');
+  try{renderEvAdmin();loadEvents();}catch(e){}
   try{loadPromoAdmin();}catch(e){}
   A.whoosh();renderAdm();if(!fromHash&&location.hash!=='#admin')location.hash='admin';
 }
